@@ -1,7 +1,15 @@
 # Enei
 
-Your choice if envoy feels too heavy for the task. 
-Mostly used as ambassador container in Kubernetes, but runs everywhere. Based on Bun >1.3, zero dependencies, daily used to save lives at [Schutz & Rettung Zurich](https://github.com/Schutz-Rettung-Zurich/). 
+Your choice if [Envoy proxy](https://www.envoyproxy.io/) feels too heavy for the task.
+
+Mostly used as ambassador container in Kubernetes, but runs everywhere. Based on [Bun >1.3](https://bun.com/docs/runtime/http/server#reference), zero dependencies, daily used at [Schutz & Rettung Zurich](https://github.com/Schutz-Rettung-Zurich/). 
+
+## Warning
+
+> warning
+> Still in early development phase, suspect bugs!
+> 
+> No container images on ghcr.io right now!
 
 ## Why?
 
