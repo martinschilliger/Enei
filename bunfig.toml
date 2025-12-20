@@ -1,0 +1,8 @@
+[install]
+# A path to a CA certificate file. The file can contain multiple certificates.
+#  "-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----"
+cafile = "/config/cafile.crt"
+
+
+# By default, telemetry is enabled
+telemetry = false
