@@ -33,7 +33,6 @@ COPY --from=prerelease /usr/src/app/index.ts .
 COPY --from=prerelease /usr/src/app/package.json .
 
 # run the app
-COPY .env.local .env.local
 USER bun
 EXPOSE 42144/tcp
 ENTRYPOINT [ "bun", "run", "index.ts" ]
