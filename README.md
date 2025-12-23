@@ -43,7 +43,7 @@ Basically it makes what `socat -v TCP4-LISTEN:42144,reuseaddr,fork TCP4:localhos
 | `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` | Proxy configuration, supported natively by Bun | ` ` |
 
 
-If you have special SSL-Certs, mount them to the file system on path `/config/cafile.crt` (you can add multiple to the same file) and Bun will read it (as set in `bunfig.tmol`). If you prefer you can also set the path via `NODE_EXTRA_CA_CERTS`.
+If you have special SSL-Certs, mount them to the file system on a path like `/config/cafile.crt` (you can add multiple to the same file) and inspect Bun to read it via `NODE_EXTRA_CA_CERTS`.
 
 
 ## Running it
@@ -101,6 +101,10 @@ spec:
             value: "true"
           - name: ENEI_LOG_BACKWARD_BODY
             value: "true"
+          - name: NODE_USE_SYSTEM_CA # https://github.com/oven-sh/bun/issues/24581
+            value: "true"
+          - name: NODE_EXTRA_CA_CERTS
+            value: "/config/cafile.crt"
         volumeMounts:
           - mountPath: /config/cafile.crt
             name: internal-root-ca
