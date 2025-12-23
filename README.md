@@ -8,8 +8,6 @@ Mostly used as ambassador container in Kubernetes, but runs everywhere. Based on
 
 > [!WARNING]  
 > Still in early development phase, suspect bugs!
-> 
-> No container images on ghcr.io right now!
 
 ## Why?
 
