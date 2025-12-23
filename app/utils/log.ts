@@ -6,11 +6,39 @@ export const termColorizedStr = (text: string, color: string) => {
   }
 };
 
+const redactSensitiveHeaders = (headers: Array) => {
+  let headersClone = JSON.parse(JSON.stringify(headers));
+  Object.keys(headersClone).forEach((key) => {
+    switch (key.toLowerCase()) {
+      case "authorization": // Bearer tokens, Basic auth
+      case "proxy-authorization": // Proxy credentials
+      case "x-api-key": // Custom API key headers
+      case "x-auth-token": // Custom auth tokens
+      case "cookie": // Session cookies
+      case "set-cookie": // Cookies sent by server
+      case "x-csrf-token": // CSRF protection token
+      case "x-requested-with": // Sometimes used for auth
+      case "x-forwarded-for": // Can expose client IPs
+      case "x-session-id": // Session identifiers
+      case "x-client-secret": // Custom client secrets
+      case "x-oauth-token": // OAuth tokens
+      case "x-access-token": // Access tokens
+      case "x-secret": // Any custom secret header
+      case "www-authenticate": // Auth challenge info
+        headersClone[key] = `${headersClone[key].charAt(
+          0
+        )}[redacted]${headersClone[key].charAt(headersClone[key].length - 1)}`;
+        break;
+    }
+  });
+  return headersClone;
+};
+
 export const logRequest = (
   id: string,
   url: URL,
   method: string,
-  headers: Array,
+  headers: Object,
   body: string
 ) => {
   // Check if we want to print request
@@ -21,7 +49,11 @@ export const logRequest = (
   // Check if we want to print response headers
   let headers_str = "";
   if (process.env.ENEI_LOG_FORWARD_HEADERS === "true") {
-    headers_str = JSON.stringify(headers);
+    if (process.env.ENEI_LOG_FORWARD_HEADERS_SHOW_SECRETS === "true") {
+      headers_str = JSON.stringify(headers);
+    } else {
+      headers_str = JSON.stringify(redactSensitiveHeaders(headers));
+    }
   }
 
   // Check if we want to print request body
@@ -46,7 +78,7 @@ export const logResponse = (
   url: URL,
   status: number,
   method: string,
-  headers: Array,
+  headers: Object,
   body: string
 ) => {
   // Check if we want to print response
@@ -57,7 +89,11 @@ export const logResponse = (
   // Check if we want to print response headers
   let headers_str = "";
   if (process.env.ENEI_LOG_BACKWARD_HEADERS === "true") {
-    headers_str = JSON.stringify(headers);
+    if (process.env.ENEI_LOG_BACKWARD_HEADERS_SHOW_SECRETS === "true") {
+      headers_str = JSON.stringify(headers);
+    } else {
+      headers_str = JSON.stringify(redactSensitiveHeaders(headers));
+    }
   }
 
   // Check if we want to print response body
