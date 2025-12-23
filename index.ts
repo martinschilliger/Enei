@@ -28,15 +28,14 @@ const server = Bun.serve({
       // TODO: make user agent work
       // TODO: let user inject headers
       const enei_url = `${process.env.ENEI_DESTINATION}${REQ_URL.pathname}${REQ_URL.search}`;
-      console.log(req);
       const enei_request = new Request(enei_url, {
         method: req.method,
         body: REQ_BODY,
         headers: {
           ...req.headers,
           Host: new URL(String(process.env.ENEI_DESTINATION)).host,
-          "Proxy-Authorization": "Bearer my-token",
-          "Content-Type": "application/json", // TODO: is missing! https://bun.sh/reference/globals/Request/headers#globals.Request.headers
+          // "Proxy-Authorization": "Bearer my-token",
+          "Content-Type": req.headers.get("content-type"), // TODO: is missing? https://bun.sh/reference/globals/Request/headers#globals.Request.headers
         },
       });
       const enei_response = await fetch(enei_request);
