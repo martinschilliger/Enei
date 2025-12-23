@@ -164,7 +164,6 @@ If you don't supply a `ENEI_DESTINATION` we will just mirror your data.
 
 The following features could be nice to have, but have not yet been implemented:
 
-- [ ] Mask sensitive headers, such as `X-API-KEY` in the log
 - [ ] Supply custom headers, eg. to inject auth tokens
 - [ ] Supply network delays or random failures for testing
 
