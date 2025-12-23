@@ -1,4 +1,4 @@
-import { logRequest, logResponse } from "./utils/log";
+import { logRequest, logResponse } from "./app/utils/log";
 
 const server = Bun.serve({
   routes: {
