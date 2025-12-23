@@ -73,10 +73,24 @@ spec:
           - containerPort: 42144
             name: http
         env:
-          - name: "PORT" # Specify where we should listen and configure yourapp to point to http://localhost:42144
+          - name: PORT # Specify where we should listen and configure yourapp to point to http://localhost:42144
             value: "42144"
-          - name: "ENEI_DESTINATION" # Specify your endpoint, can also be an external host like https://postman-echo.com
+          - name: ENEI_DESTINATION # Specify your endpoint, can also be an external host like https://postman-echo.com
             value: "http://localhost:42118"
+          - name: ENEI_LOG_IGNORE
+            value: "^\\/HealthCheck$"
+          - name: ENEI_LOG_FORWARD
+            value: "true"
+          - name: ENEI_LOG_FORWARD_HEADERS
+            value: "false"
+          - name: ENEI_LOG_FORWARD_BODY
+            value: "true"
+          - name: ENEI_LOG_BACKWARD
+            value: "true"
+          - name: ENEI_LOG_BACKWARD_HEADERS
+            value: "false"
+          - name: ENEI_LOG_BACKWARD_BODY
+            value: "true"
           - name: HTTP_PROXY
             value: "http://proxy.corporate.local:8080"
           - name: HTTPS_PROXY
