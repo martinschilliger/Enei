@@ -42,7 +42,6 @@ Basically it makes what `socat -v TCP4-LISTEN:42144,reuseaddr,fork TCP4:localhos
 | `ENEI_HEADER_BACKWARD_INJECT_1/_2/_3` | See above | ` ` |
 | `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` | Proxy configuration, supported natively by Bun | ` ` |
 
-
 If you have special SSL-Certs, mount them to the file system on a path like `/config/cafile.crt` (you can add multiple to the same file) and inspect Bun to read it via `NODE_EXTRA_CA_CERTS`.
 
 
