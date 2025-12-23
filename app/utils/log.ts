@@ -6,7 +6,7 @@ export const termColorizedStr = (text: string, color: string) => {
   }
 };
 
-const redactSensitiveHeaders = (headers: Array) => {
+const redactSensitiveHeaders = (headers: Object) => {
   let headersClone = JSON.parse(JSON.stringify(headers));
   Object.keys(headersClone).forEach((key) => {
     switch (key.toLowerCase()) {
