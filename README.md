@@ -66,15 +66,16 @@ spec:
         app: myapp
     spec:
       containers:
-      - name: request-logging-ambassador
+      - name: myapp-enei
         image: ghcr.io/martinschilliger/enei:latest
-        pullPolicy: IfNotPresent      # Like always recommended for producation use
+        imagePullPolicy: IfNotPresent # Like always recommended for producation use
         ports:
           - containerPort: 42144
+            name: http
         env:
-          - name: "BUN_PORT"          # Specify where we should listen and configure yourapp to point to http://localhost:42144
-            value: 42144
-          - name: "ENEI_DESTINATION"   # Specify your endpoint, can also be an external host like https://postman-echo.com
+          - name: "PORT" # Specify where we should listen and configure yourapp to point to http://localhost:42144
+            value: "42144"
+          - name: "ENEI_DESTINATION" # Specify your endpoint, can also be an external host like https://postman-echo.com
             value: "http://localhost:42118"
           - name: HTTP_PROXY
             value: "http://proxy.corporate.local:8080"
@@ -90,11 +91,26 @@ spec:
           - mountPath: /config/cafile.crt
             name: internal-root-ca
             subPath: COMPANY-ROOT-CA.crt
-        runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        allowPrivilegeEscalation: false
-        readOnlyRootFilesystem: true
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+        livenessProbe:
+            httpGet:
+              path: /enei/health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /enei/health
+              port: http
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            failureThreshold: 3
       - name: myapp
         image: yourregistry/yourapp:latest
         ports:
