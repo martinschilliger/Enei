@@ -172,6 +172,12 @@ And there is also some code cleanup needed:
 
 ## Development
 
+### Deploy on GitHub
+
+1. Commit the changes to git: `git add .`, `git commit -m "My message"`
+2. Create a new version: `npm version major|minor|patch`
+3. Push Commits and Tags: `git push origin main --follow-tags`
+
 ### Install dependencies
 
 Nothing to do. There are no dependencies, it's all plain Bun 🥳. 
