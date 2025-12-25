@@ -25,6 +25,8 @@ Basically it makes what `socat -v TCP4-LISTEN:42144,reuseaddr,fork TCP4:localhos
 |---------|-------------|-----------------|
 | `PORT` | Listener port | `42144` |
 | `ENEI_DESTINATION` | Destination URL. You can also specify protocol and port here. | `https://postman-echo.com` |
+| `ENEI_DELAY_REGEX` | Regex on `URL.pathname` to delay request forwarding. Enei will just wait with sending the request to the destination. Useful for debugging. | `^\/delayed/` |
+| `ENEI_DELAY_MILLISECONDS` | The duration for `ENEI_DELAY_REGEX` to delay request forwarding. | `5000` |
 | `ENEI_LOG_IGNORE` | Regex on `URL.pathname` to ignore in log output. Enei will forward traffic to `/health` to the `ENEI_DESTINATION` server. Use `/enei/health` to check Enei itself. | `^\/health(z?)$` |
 | `ENEI_LOG_COLORIZE` | Colorize log in terminal | `true` |
 | `ENEI_LOG_STATUSCODE_STDERR` | Output to stderr if HTTP response code is > 300 | `false` |
@@ -164,7 +166,8 @@ If you don't supply a `ENEI_DESTINATION` we will just mirror your data.
 The following features could be nice to have, but have not yet been implemented:
 
 - [ ] Supply custom headers, eg. to inject auth tokens
-- [ ] Supply network delays or random failures for testing
+- [x] Supply network delays for testing
+- [ ] Supply random failures for testing
 
 And there is also some code cleanup needed:
 

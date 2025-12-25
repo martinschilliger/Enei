@@ -1,4 +1,7 @@
 export const termColorizedStr = (text: string, color: string) => {
+  if (text.length === 0) {
+    return "[__ENEI_DO_NOT_PRINT__]";
+  }
   if (process.env.ENEI_LOG_COLORIZE === "true") {
     return [Bun.color(color, "ansi"), text, "\u001B[0m"].join("");
   } else {
@@ -39,7 +42,8 @@ export const logRequest = (
   url: URL,
   method: string,
   headers: Object,
-  body: string
+  body: string,
+  additional?: string
 ) => {
   // Check if we want to print request
   if (process.env.ENEI_LOG_FORWARD !== "true") {
@@ -70,7 +74,7 @@ export const logRequest = (
   }
 
   // REQU and RESP are chosen to be the same length
-  logLine(id, url, 0, method, headers_str, body, "REQU");
+  logLine(id, url, 0, method, headers_str, body, "REQUEST", additional);
 };
 
 export const logResponse = (
@@ -79,7 +83,8 @@ export const logResponse = (
   status: number,
   method: string,
   headers: Object,
-  body: string
+  body: string,
+  additional?: string
 ) => {
   // Check if we want to print response
   if (process.env.ENEI_LOG_BACKWARD !== "true") {
@@ -110,7 +115,7 @@ export const logResponse = (
   }
 
   // REQU and RESP are chosen to be the same length
-  logLine(id, url, status, method, headers_str, body, "RESP");
+  logLine(id, url, status, method, headers_str, body, "RESPONSE", additional);
 };
 
 const logLine = (
@@ -120,7 +125,8 @@ const logLine = (
   method: string,
   headers: string,
   body: string,
-  type: string
+  type: string,
+  additional?: string
 ) => {
   // Format values for the log
   let time = new Date();
@@ -129,9 +135,10 @@ const logLine = (
     .toString()
     .padStart(3, "0")}`;
   let path_log = url.pathname + url.search;
-  let status_log = status ? String(status) : "   "; // to be always 3 chars
+  let status_log = status ? String(status) : "";
   let type_log = `[${type}]`;
   let id_log = `[${id}]`;
+  let additional_log = additional ? `[${additional}]` : "";
 
   // Test if the pathname is in ENEI_LOG_IGNORE
   if (process.env.ENEI_LOG_IGNORE) {
@@ -148,10 +155,11 @@ const logLine = (
     termColorizedStr(method, "orange"),
     termColorizedStr(status_log, status < 400 ? "green" : "red"),
     termColorizedStr(id_log, "grey"),
+    termColorizedStr(additional_log, "grey"),
     termColorizedStr(JSON.stringify(path_log), "yellow"),
     termColorizedStr(headers, "blue"),
     termColorizedStr(body, "brown"),
-  ];
+  ].filter((x) => x != "[__ENEI_DO_NOT_PRINT__]");
   // print to stderr, if configured so
   if (status >= 400 && process.env.ENEI_LOG_STATUSCODE_STDERR === "true") {
     console.error(...log_data);
