@@ -17,7 +17,10 @@ Basically it makes what `socat -v TCP4-LISTEN:42144,reuseaddr,fork TCP4:localhos
 
 ## Features
 
-- Masks Bearer, X-Api-Key, Basic Auth, X-Token (but not fully).
+- Configure logging of request and response. You can print metadata, headers, body, secrets. And all configurable by environment variables.
+- Supports colored output, can send HTTP response code >= 400 to StdErr
+- Masks all secrets such as Bearer token, X-Api-Key, Basic Auth, X-Token (unless you configure `…SHOW_SECRETS`).
+- Can delay network requests on specific paths (uses RegExp, test it on [RegExr](https://regexr.com/))
 
 ## Config
 
@@ -29,7 +32,7 @@ Basically it makes what `socat -v TCP4-LISTEN:42144,reuseaddr,fork TCP4:localhos
 | `ENEI_DELAY_MILLISECONDS` | The duration for `ENEI_DELAY_REGEX` to delay request forwarding. | `5000` |
 | `ENEI_LOG_IGNORE` | Regex on `URL.pathname` to ignore in log output. Enei will forward traffic to `/health` to the `ENEI_DESTINATION` server. Use `/enei/health` to check Enei itself. | `^\/health(z?)$` |
 | `ENEI_LOG_COLORIZE` | Colorize log in terminal | `true` |
-| `ENEI_LOG_STATUSCODE_STDERR` | Output to stderr if HTTP response code is > 300 | `false` |
+| `ENEI_LOG_STATUSCODE_STDERR` | Output to stderr if HTTP response code is >= 400 | `false` |
 | `ENEI_LOG_FORWARD` | Print request | `true` |
 | `ENEI_LOG_FORWARD_HEADERS` | Print request headers | `false` |
 | `ENEI_LOG_FORWARD_HEADERS_SHOW_SECRETS` | Print sensitive request headers. By default first and last char gets printed with [redacted] in the middle. | `false` |
@@ -67,8 +70,8 @@ spec:
         app: myapp
     spec:
       containers:
-      - name: myapp-enei
-        image: ghcr.io/martinschilliger/enei:latest
+      - name: myapp-enei-inbound
+        image: ghcr.io/martinschilliger/enei:latest # always specify release version, eg enei:v0.4.0
         imagePullPolicy: IfNotPresent # Like always recommended for producation use
         ports:
           - containerPort: 42144
@@ -78,6 +81,10 @@ spec:
             value: "42144"
           - name: ENEI_DESTINATION # Specify your endpoint, can also be an external host like https://postman-echo.com
             value: "http://localhost:42118"
+          - name: ENEI_DELAY_REGEX
+            value: "^\\/api\\/incidents\\/(keyword|protocol)"
+          - name: ENEI_DELAY_MILLISECONDS
+            value: "5000"
           - name: ENEI_LOG_IGNORE
             value: "^\\/HealthCheck$"
           - name: ENEI_LOG_FORWARD
@@ -134,6 +141,9 @@ spec:
         image: yourregistry/yourapp:latest
         ports:
           - containerPort: 42118
+        env:
+          - name: MYAPP_ENDPOINT # You could also use enei for outbound connections, just specify a second enei container in the same pod and adjust values
+            value: "http://localhost:42122"
       dnsPolicy: ClusterFirst
       imagePullSecrets:
       - name: rescuetrack
