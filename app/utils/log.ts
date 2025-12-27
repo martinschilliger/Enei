@@ -28,9 +28,7 @@ const redactSensitiveHeaders = (headers: Object) => {
       case "x-access-token": // Access tokens
       case "x-secret": // Any custom secret header
       case "www-authenticate": // Auth challenge info
-        headersClone[key] = `${headersClone[key].charAt(
-          0
-        )}[redacted]${headersClone[key].charAt(headersClone[key].length - 1)}`;
+        headersClone[key] = "[redacted]";
         break;
     }
   });

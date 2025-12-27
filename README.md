@@ -36,12 +36,12 @@ Basically it makes what `socat -v TCP4-LISTEN:42144,reuseaddr,fork TCP4:localhos
 | `ENEI_LOG_STATUSCODE_STDERR` | Output to stderr if HTTP response code is >= 400 | `false` |
 | `ENEI_LOG_FORWARD` | Print request | `true` |
 | `ENEI_LOG_FORWARD_HEADERS` | Print request headers | `false` |
-| `ENEI_LOG_FORWARD_HEADERS_SHOW_SECRETS` | Print sensitive request headers. By default first and last char gets printed with [redacted] in the middle. | `false` |
+| `ENEI_LOG_FORWARD_HEADERS_SHOW_SECRETS` | Print sensitive request headers. By default printed as `[redacted]`. | `false` |
 | `ENEI_LOG_FORWARD_BODY` | Print request body | `false` |
 | `ENEI_LOG_FORWARD_BODY_CAP` | Cap request body to char count | `1024` |
 | `ENEI_LOG_BACKWARD` | Print response | `true` |
 | `ENEI_LOG_BACKWARD_HEADERS` | Print response headers | `false` |
-| `ENEI_LOG_BACKWARD_HEADERS_SHOW_SECRETS` | Print sensitive response headers. By default first and last char gets printed with [redacted] in the middle. | `false` |
+| `ENEI_LOG_BACKWARD_HEADERS_SHOW_SECRETS` | Print sensitive response headers. By default printed as `[redacted]`. | `false` |
 | `ENEI_LOG_BACKWARD_BODY` | Print response body | `false` |
 | `ENEI_LOG_BACKWARD_BODY_CAP` | Cap response body to char count | `1024` |
 | `ENEI_HEADER_FORWARD_INJECT_1/_2/_3` | Inject or overwrite request headers (`Key: Value`); can also remove headers; commonly used for API keys | ` ` |
