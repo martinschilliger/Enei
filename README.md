@@ -21,6 +21,7 @@ Basically it makes what `socat -v TCP4-LISTEN:42144,reuseaddr,fork TCP4:localhos
 - Supports colored output, can send HTTP response code >= 400 to StdErr
 - Masks all secrets such as Bearer token, X-Api-Key, Basic Auth, X-Token (unless you configure `…SHOW_SECRETS`).
 - Can delay network requests on specific paths (uses RegExp, test it on [RegExr](https://regexr.com/))
+- Overwrites `Accept-Encoding` of the request to what Bun supports, but answers in the encoding your app undertands.
 
 ## Config
 

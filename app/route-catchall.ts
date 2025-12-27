@@ -40,9 +40,16 @@ export const catchAll = async (req: Request) => {
   enei_request_options.headers.host = new URL(
     String(process.env.ENEI_DESTINATION)
   ).host;
+  // remove content-encoding because BUN will make its own
+  delete enei_request_options.headers["accept-encoding"];
   const enei_request = new Request(enei_url, enei_request_options);
   const enei_response = await fetch(enei_request);
   const enei_response_body = await enei_response.text();
+  const enei_response_headers = JSON.parse(
+    JSON.stringify(enei_response.headers)
+  );
+  // remove content-encoding because BUN will make its own
+  delete enei_response_headers["content-encoding"];
 
   // send response data to the logging function
   logResponse(
@@ -50,7 +57,7 @@ export const catchAll = async (req: Request) => {
     REQ_URL,
     enei_response.status,
     req.method,
-    enei_response.headers,
+    enei_response_headers,
     enei_response_body,
     enei_delay_request ? `ENEI-DELAY-${ENEI_DELAY_MILLISECONDS}ms` : ""
   );
@@ -59,6 +66,6 @@ export const catchAll = async (req: Request) => {
   return new Response(enei_response_body, {
     status: enei_response.status,
     statusText: enei_response.statusText,
-    headers: enei_response.headers,
+    headers: enei_response_headers,
   });
 };
