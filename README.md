@@ -7,7 +7,7 @@ Mostly used as ambassador container in Kubernetes, but runs everywhere. Based on
 ## Warning
 
 > [!WARNING]  
-> Still in early development phase, suspect bugs!
+> Still in  development phase, please file issues for bugs!
 
 ## Why?
 
@@ -20,6 +20,7 @@ Basically it makes what `socat -v TCP4-LISTEN:42144,reuseaddr,fork TCP4:localhos
 - Configure logging of request and response. You can print metadata, headers, body, secrets. And all configurable by environment variables.
 - Supports colored output, can send HTTP response code >= 400 to StdErr
 - Masks all secrets such as Bearer token, X-Api-Key, Basic Auth, X-Token (unless you configure `…SHOW_SECRETS`).
+- Handles custom CA (for example company wide root certificates) so you don't have to tweak your app.
 - Can delay network requests on specific paths (uses RegExp, test it on [RegExr](https://regexr.com/))
 - Overwrites `Accept-Encoding` of the request to what Bun supports, but answers in the encoding your app undertands.
 
@@ -177,7 +178,7 @@ If you don't supply a `ENEI_DESTINATION` we will just mirror your data.
 The following features could be nice to have, but have not yet been implemented:
 
 - [ ] Supply custom headers, eg. to inject auth tokens
-- [x] Supply network delays for testing
+- [ ] SIGTERM: Wait for ongoing requests (especially important with delayed requests) to finish.
 - [ ] Supply random failures for testing
 
 And there is also some code cleanup needed:
