@@ -112,7 +112,6 @@ export const logResponse = (
     body = body.substring(0, CAP_AFTER);
   }
 
-  // REQU and RESP are chosen to be the same length
   logLine(id, url, status, method, headers_str, body, "RESPONSE", additional);
 };
 

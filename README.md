@@ -17,12 +17,12 @@ Basically it makes what `socat -v TCP4-LISTEN:42144,reuseaddr,fork TCP4:localhos
 
 ## Features
 
-- Configure logging of request and response. You can print metadata, headers, body, secrets. And all configurable by environment variables.
-- Supports colored output, can send HTTP response code >= 400 to StdErr
-- Masks all secrets such as Bearer token, X-Api-Key, Basic Auth, X-Token (unless you configure `…SHOW_SECRETS`).
-- Handles custom CA (for example company wide root certificates) so you don't have to tweak your app.
-- Can delay network requests on specific paths (uses RegExp, test it on [RegExr](https://regexr.com/))
-- Overwrites `Accept-Encoding` of the request to what Bun supports, but answers in the encoding your app undertands.
+- Configure **logging of request and *response***. You can print metadata, headers, body, secrets. And all configurable by environment variables. 
+  - Supports colored output, can send HTTP response code >= 400 to StdErr
+  - Masks all secrets such as Bearer token, X-Api-Key, Basic Auth, X-Token (unless you configure `…SHOW_SECRETS`).
+- Handles compression, TLS versions and **custom CA** (for example company wide root certificates) so you don't have to tweak your existing app.
+- Can **delay** network requests on specific paths (uses RegExp, test it on [RegExr](https://regexr.com/))
+- Inject **custom headers** to your requests.
 
 ## Config
 
@@ -32,6 +32,8 @@ Basically it makes what `socat -v TCP4-LISTEN:42144,reuseaddr,fork TCP4:localhos
 | `ENEI_DESTINATION` | Destination URL. You can also specify protocol and port here. | `https://postman-echo.com` |
 | `ENEI_DELAY_REGEX` | Regex on `URL.pathname` to delay request forwarding. Enei will just wait with sending the request to the destination. Useful for debugging. | `^\/delayed/` |
 | `ENEI_DELAY_MILLISECONDS` | The duration for `ENEI_DELAY_REGEX` to delay request forwarding. | `5000` |
+| `ENEI_FORWARD_CUSTOM_HEADERS` | Custom headers added to the request. Should be a JSON object as string (gets parsed by enei), like `{"x-api-key": "token-42"}` | `[]` |
+| `ENEI_BACKWARD_CUSTOM_HEADERS` | Custom headers added to the response. Should be a JSON object as string (gets parsed by enei), like `{"x-api-key": "token-42"}` | `[]` |
 | `ENEI_LOG_IGNORE` | Regex on `URL.pathname` to ignore in log output. Enei will forward traffic to `/health` to the `ENEI_DESTINATION` server. Use `/enei/health` to check Enei itself. | `^\/health(z?)$` |
 | `ENEI_LOG_COLORIZE` | Colorize log in terminal | `true` |
 | `ENEI_LOG_STATUSCODE_STDERR` | Output to stderr if HTTP response code is >= 400 | `false` |
