@@ -32,8 +32,8 @@ Basically it makes what `socat -v TCP4-LISTEN:42144,reuseaddr,fork TCP4:localhos
 | `ENEI_DESTINATION` | Destination URL. You can also specify protocol and port here. | `https://postman-echo.com` |
 | `ENEI_DELAY_REGEX` | Regex on `URL.pathname` to delay request forwarding. Enei will just wait with sending the request to the destination. Useful for debugging. | `^\/delayed/` |
 | `ENEI_DELAY_MILLISECONDS` | The duration for `ENEI_DELAY_REGEX` to delay request forwarding. | `5000` |
-| `ENEI_FORWARD_CUSTOM_HEADERS` | Custom headers added to the request. Should be a JSON object as string (gets parsed by enei), like `{"x-api-key": "token-42"}`. Will overwrite existing (thats a feature!) | `[]` |
-| `ENEI_BACKWARD_CUSTOM_HEADERS` | Custom headers added to the response. Should be a JSON object as string (gets parsed by enei), like `{"x-api-key": "token-42"}`. Will overwrite existing (thats a feature!) | `[]` |
+| `ENEI_FORWARD_CUSTOM_HEADERS` | Custom headers added to the request. Should be a JSON object as string (gets parsed by enei), like `{"x-api-key": "token-42"}`. Will overwrite existing (thats a feature!) | ` ` |
+| `ENEI_BACKWARD_CUSTOM_HEADERS` | Custom headers added to the response. Should be a JSON object as string (gets parsed by enei), like `{"x-api-key": "token-42"}`. Will overwrite existing (thats a feature!) | ` ` |
 | `ENEI_LOG_IGNORE` | Regex on `URL.pathname` to ignore in log output. Enei will forward traffic to `/health` to the `ENEI_DESTINATION` server. Use `/enei/health` to check Enei itself. | `^\/health(z?)$` |
 | `ENEI_LOG_COLORIZE` | Colorize log in terminal | `true` |
 | `ENEI_LOG_STATUSCODE_STDERR` | Output to stderr if HTTP response code is >= 400 | `false` |
@@ -47,8 +47,6 @@ Basically it makes what `socat -v TCP4-LISTEN:42144,reuseaddr,fork TCP4:localhos
 | `ENEI_LOG_BACKWARD_HEADERS_SHOW_SECRETS` | Print sensitive response headers. By default printed as `[redacted]`. | `false` |
 | `ENEI_LOG_BACKWARD_BODY` | Print response body | `false` |
 | `ENEI_LOG_BACKWARD_BODY_CAP` | Cap response body to char count | `1024` |
-| `ENEI_HEADER_FORWARD_INJECT_1/_2/_3` | Inject or overwrite request headers (`Key: Value`); can also remove headers; commonly used for API keys | ` ` |
-| `ENEI_HEADER_BACKWARD_INJECT_1/_2/_3` | See above | ` ` |
 | `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` | Proxy configuration, supported natively by Bun | ` ` |
 
 If you have special SSL-Certs, mount them to the file system on a path like `/config/cafile.crt` (you can add multiple to the same file) and inspect Bun to read it via `NODE_EXTRA_CA_CERTS`.
