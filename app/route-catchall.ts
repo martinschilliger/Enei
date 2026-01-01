@@ -1,9 +1,7 @@
+import { processDelays } from "./processDelays";
 import { logRequest, logResponse } from "./utils/log";
 
 export const catchAll = async (req: Request) => {
-  const ENEI_DELAY_1_MILLISECONDS = Number(
-    process.env.ENEI_DELAY_1_MILLISECONDS
-  );
   const REQ_ID = Bun.randomUUIDv7();
   const REQ_URL = new URL(req.url);
   let REQ_BODY = "";
@@ -58,17 +56,12 @@ export const catchAll = async (req: Request) => {
   );
 
   //
-  // delay the request if needed: test if the pathname is in ENEI_DELAY_1_PATH_REGEX
+  // delay the request if needed: test if the path is in ENEI_DELAY_1/2/3_PATH_REGEX or body in ENEI_DELAY_1/2/3_BODY_REGEX
   //
-  if (process.env.ENEI_DELAY_1_PATH_REGEX) {
-    const regex = new RegExp(process.env.ENEI_DELAY_1_PATH_REGEX);
-    if (regex.test(`${REQ_URL.pathname}${REQ_URL.search}`)) {
-      enei_delay_request = true;
-      await new Promise((resolve) =>
-        setTimeout(resolve, ENEI_DELAY_1_MILLISECONDS)
-      );
-    }
-  }
+  enei_delay_request = await processDelays(
+    `${REQ_URL.pathname}${REQ_URL.search}`,
+    REQ_BODY
+  );
 
   //
   // make the actual request
@@ -108,7 +101,9 @@ export const catchAll = async (req: Request) => {
     req.method,
     enei_response_headers,
     enei_response_body,
-    enei_delay_request ? `ENEI-DELAY-${ENEI_DELAY_1_MILLISECONDS}ms` : ""
+    enei_delay_request
+      ? `ENEI-DELAY-${process.env.ENEI_DELAY_1_MILLISECONDS}ms`
+      : ""
   );
 
   //

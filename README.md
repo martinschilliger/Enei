@@ -30,8 +30,8 @@ Basically it makes what `socat -v TCP4-LISTEN:42144,reuseaddr,fork TCP4:localhos
 |---------|-------------|-----------------|
 | `PORT` | Listener port | `42144` |
 | `ENEI_DESTINATION` | Destination URL. You can also specify protocol and port here. | `https://postman-echo.com` |
-| `ENEI_DELAY_1_PATH_REGEX` | Regex on `URL.pathname` to delay request forwarding. Enei will just wait with sending the request to the destination. Useful for debugging. | `^\/delayed\/` |
-| `ENEI_DELAY_1_BODY_REGEX` | Regex on request body to delay request forwarding, like on path above. If either path or body is found the delay is applied. | `` |
+| `ENEI_DELAY_1_PATH_REGEX` | Regex on `URL.pathname` + `URL.search` to delay request forwarding. Enei will just wait with sending the request to the destination. Useful for debugging. | `^\/delayed\/` |
+| `ENEI_DELAY_1_BODY_REGEX` | Regex on request body to delay request forwarding, like on path above. If either path or body is found the delay is applied. Right now there is no possibility to delay on response body, file an issue if you think that should be supported. ☕ | `` |
 | `ENEI_DELAY_1_MILLISECONDS` | The duration to delay request forwarding. Note: The delays are tested sequentially, so if all thre match you get a delay of 15 seconds in this example! | `5000` |
 | `ENEI_DELAY_2_PATH_REGEX` | Same as `ENEI_DELAY_1_PATH_REGEX` | `` |
 | `ENEI_DELAY_2_BODY_REGEX` | Same as `ENEI_DELAY_1_BODY_REGEX` | `` |
@@ -41,7 +41,7 @@ Basically it makes what `socat -v TCP4-LISTEN:42144,reuseaddr,fork TCP4:localhos
 | `ENEI_DELAY_3_MILLISECONDS` | Same as `ENEI_DELAY_1_MILLISECONDS` | `7000` |
 | `ENEI_FORWARD_CUSTOM_HEADERS` | Custom headers added to the request. Should be a JSON object as string (gets parsed by Enei), like `{"x-api-key": "token-42"}`. Will overwrite existing (thats a feature!) | ` ` |
 | `ENEI_BACKWARD_CUSTOM_HEADERS` | Custom headers added to the response. Should be a JSON object as string (gets parsed by Enei), like `{"x-api-key": "token-42"}`. Will overwrite existing (thats a feature!) | ` ` |
-| `ENEI_LOG_IGNORE` | Regex on `URL.pathname` to ignore in log output. Enei will forward traffic to `/health` to the `ENEI_DESTINATION` server. Use `/enei/health` to check Enei itself. | `^\/health(z?)$` |
+| `ENEI_LOG_IGNORE` | Regex on `URL.pathname` + `URL.search` to ignore in log output. Enei will forward traffic to `/health` to the `ENEI_DESTINATION` server. Use `/enei/health` to check Enei itself. | `^\/health(z?)$` |
 | `ENEI_LOG_COLORIZE` | Colorize log in terminal | `true` |
 | `ENEI_LOG_STATUSCODE_STDERR` | Output to stderr if HTTP response code is >= 400 | `false` |
 | `ENEI_LOG_FORWARD` | Print request | `true` |
