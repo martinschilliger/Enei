@@ -30,10 +30,17 @@ Basically it makes what `socat -v TCP4-LISTEN:42144,reuseaddr,fork TCP4:localhos
 |---------|-------------|-----------------|
 | `PORT` | Listener port | `42144` |
 | `ENEI_DESTINATION` | Destination URL. You can also specify protocol and port here. | `https://postman-echo.com` |
-| `ENEI_DELAY_REGEX` | Regex on `URL.pathname` to delay request forwarding. Enei will just wait with sending the request to the destination. Useful for debugging. | `^\/delayed/` |
-| `ENEI_DELAY_MILLISECONDS` | The duration for `ENEI_DELAY_REGEX` to delay request forwarding. | `5000` |
-| `ENEI_FORWARD_CUSTOM_HEADERS` | Custom headers added to the request. Should be a JSON object as string (gets parsed by enei), like `{"x-api-key": "token-42"}`. Will overwrite existing (thats a feature!) | ` ` |
-| `ENEI_BACKWARD_CUSTOM_HEADERS` | Custom headers added to the response. Should be a JSON object as string (gets parsed by enei), like `{"x-api-key": "token-42"}`. Will overwrite existing (thats a feature!) | ` ` |
+| `ENEI_DELAY_1_PATH_REGEX` | Regex on `URL.pathname` to delay request forwarding. Enei will just wait with sending the request to the destination. Useful for debugging. | `^\/delayed\/` |
+| `ENEI_DELAY_1_BODY_REGEX` | Regex on request body to delay request forwarding, like on path above. If either path or body is found the delay is applied. | `` |
+| `ENEI_DELAY_1_MILLISECONDS` | The duration to delay request forwarding. Note: The delays are tested sequentially, so if all thre match you get a delay of 15 seconds in this example! | `5000` |
+| `ENEI_DELAY_2_PATH_REGEX` | Same as `ENEI_DELAY_1_PATH_REGEX` | `` |
+| `ENEI_DELAY_2_BODY_REGEX` | Same as `ENEI_DELAY_1_BODY_REGEX` | `` |
+| `ENEI_DELAY_2_MILLISECONDS` | Same as `ENEI_DELAY_1_MILLISECONDS` | `3000` |
+| `ENEI_DELAY_3_PATH_REGEX` | Same as `ENEI_DELAY_1_PATH_REGEX` | `` |
+| `ENEI_DELAY_3_BODY_REGEX` | Same as `ENEI_DELAY_1_BODY_REGEX` | `` | |
+| `ENEI_DELAY_3_MILLISECONDS` | Same as `ENEI_DELAY_1_MILLISECONDS` | `7000` |
+| `ENEI_FORWARD_CUSTOM_HEADERS` | Custom headers added to the request. Should be a JSON object as string (gets parsed by Enei), like `{"x-api-key": "token-42"}`. Will overwrite existing (thats a feature!) | ` ` |
+| `ENEI_BACKWARD_CUSTOM_HEADERS` | Custom headers added to the response. Should be a JSON object as string (gets parsed by Enei), like `{"x-api-key": "token-42"}`. Will overwrite existing (thats a feature!) | ` ` |
 | `ENEI_LOG_IGNORE` | Regex on `URL.pathname` to ignore in log output. Enei will forward traffic to `/health` to the `ENEI_DESTINATION` server. Use `/enei/health` to check Enei itself. | `^\/health(z?)$` |
 | `ENEI_LOG_COLORIZE` | Colorize log in terminal | `true` |
 | `ENEI_LOG_STATUSCODE_STDERR` | Output to stderr if HTTP response code is >= 400 | `false` |
@@ -41,12 +48,12 @@ Basically it makes what `socat -v TCP4-LISTEN:42144,reuseaddr,fork TCP4:localhos
 | `ENEI_LOG_FORWARD_HEADERS` | Print request headers | `false` |
 | `ENEI_LOG_FORWARD_HEADERS_SHOW_SECRETS` | Print sensitive request headers. By default printed as `[redacted]`. | `false` |
 | `ENEI_LOG_FORWARD_BODY` | Print request body | `false` |
-| `ENEI_LOG_FORWARD_BODY_CAP` | Cap request body to char count | `1024` |
+| `ENEI_LOG_FORWARD_BODY_CAP` | Cap request body after char count | `1024` |
 | `ENEI_LOG_BACKWARD` | Print response | `true` |
 | `ENEI_LOG_BACKWARD_HEADERS` | Print response headers | `false` |
 | `ENEI_LOG_BACKWARD_HEADERS_SHOW_SECRETS` | Print sensitive response headers. By default printed as `[redacted]`. | `false` |
 | `ENEI_LOG_BACKWARD_BODY` | Print response body | `false` |
-| `ENEI_LOG_BACKWARD_BODY_CAP` | Cap response body to char count | `1024` |
+| `ENEI_LOG_BACKWARD_BODY_CAP` | Cap response body after char count | `1024` |
 | `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` | Proxy configuration, supported natively by Bun | ` ` |
 
 If you have special SSL-Certs, mount them to the file system on a path like `/config/cafile.crt` (you can add multiple to the same file) and inspect Bun to read it via `NODE_EXTRA_CA_CERTS`.
@@ -83,9 +90,9 @@ spec:
             value: "42144"
           - name: ENEI_DESTINATION # Specify your endpoint, can also be an external host like https://postman-echo.com
             value: "http://localhost:42118"
-          - name: ENEI_DELAY_REGEX
+          - name: ENEI_DELAY_1_PATH_REGEX
             value: "^\\/api\\/incidents\\/(keyword|protocol)"
-          - name: ENEI_DELAY_MILLISECONDS
+          - name: ENEI_DELAY_1_MILLISECONDS
             value: "5000"
           - name: ENEI_LOG_IGNORE
             value: "^\\/HealthCheck$"
@@ -144,7 +151,7 @@ spec:
         ports:
           - containerPort: 42118
         env:
-          - name: MYAPP_ENDPOINT # You could also use enei for outbound connections, just specify a second enei container in the same pod and adjust values
+          - name: MYAPP_ENDPOINT # You could also use Enei for outbound connections, just specify a second Enei container in the same pod and adjust values
             value: "http://localhost:42122"
       dnsPolicy: ClusterFirst
       imagePullSecrets:
