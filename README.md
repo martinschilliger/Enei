@@ -4,25 +4,27 @@ Your choice if [Envoy proxy](https://www.envoyproxy.io/) feels too heavy for the
 
 Mostly used as ambassador container in Kubernetes, but runs everywhere. Based on [Bun >1.3](https://bun.com/docs/runtime/http/server#reference), zero dependencies.
 
-## Warning
-
-> [!WARNING]  
-> Still in  development phase, please file issues for bugs!
-
 ## Why?
 
-This container can be dropped into a Kubernetes Deployment and act as a middleware between the service and the pod. It will by default print all the requests and their responses to stdout. This way you can watch it with `kubectl logs` or do whatever you do with them, for example forward to Grafana Loki.
+This container can be dropped into a Kubernetes Deployment and act as a middleware between the service and the pod. It will by default print all the requests and their responses to stdout. This way you can watch it with `kubectl logs` or do whatever you want with them, for example forward to Grafana Loki.
 
-Basically it makes what `socat -v TCP4-LISTEN:42144,reuseaddr,fork TCP4:localhost:42118` does but in a nice formatted way.
+Basically it makes what `socat -v TCP4-LISTEN:42144,reuseaddr,fork TCP4:example.com:42118` does but in a nice formatted way.
+
+If you feel comfortable with Python, you can also use `mitmproxy` for the task. But I did not. 🤷‍♂️
 
 ## Features
 
-- Configure **logging of request and *response***. You can print metadata, headers, body, secrets. And all configurable by environment variables. 
+- 📝 Configure **logging of *request* and *response*** (that's not easy with nginx, traefik, ha-proxy). You can print metadata, headers, body, even secrets (if you want so). And all configurable by environment variables. 
   - Supports colored output, can send HTTP response code >= 400 to StdErr
   - Masks all secrets such as Bearer token, X-Api-Key, Basic Auth, X-Token (unless you configure `…SHOW_SECRETS`).
-- Handles compression, TLS versions and **custom CA** (for example company wide root certificates) so you don't have to tweak your existing app.
-- Can **delay** network requests on specific paths (uses RegExp, test it on [RegExr](https://regexr.com/))
-- Inject or overwrite **custom headers** to your requests. 
+- 🔐 Handles compression, TLS versions and **custom CA** (for example company wide root certificates) so you don't have to tweak your existing app.
+- 🐢 Can **delay** network requests on specific paths and request bodies (uses RegExp, test them for example on [RegExr](https://regexr.com/)). And make sure Enei has enough RAM to keep the data in memory while waiting.
+- 📨 Inject or overwrite **custom headers** to your requests. 
+
+## Warning
+
+> [!WARNING]  
+> Still in development phase, please file issues for bugs you find!
 
 ## Config
 
