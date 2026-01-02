@@ -5,7 +5,6 @@ export const catchAll = async (req: Request) => {
   const REQ_ID = Bun.randomUUIDv7();
   const REQ_URL = new URL(req.url);
   let REQ_BODY = "";
-  let enei_delay_request = false;
 
   switch (req.method) {
     case "POST":
@@ -58,7 +57,7 @@ export const catchAll = async (req: Request) => {
   //
   // delay the request if needed: test if the path is in ENEI_DELAY_1/2/3_PATH_REGEX or body in ENEI_DELAY_1/2/3_BODY_REGEX
   //
-  enei_delay_request = await processDelays(
+  const enei_delay_request_text = await processDelays(
     `${REQ_URL.pathname}${REQ_URL.search}`,
     REQ_BODY
   );
@@ -101,9 +100,7 @@ export const catchAll = async (req: Request) => {
     req.method,
     enei_response_headers,
     enei_response_body,
-    enei_delay_request
-      ? `ENEI-DELAY-${process.env.ENEI_DELAY_1_MILLISECONDS}ms`
-      : ""
+    enei_delay_request_text
   );
 
   //

@@ -2,7 +2,7 @@
 
 Your choice if [Envoy proxy](https://www.envoyproxy.io/) feels too heavy for the task.
 
-Mostly used as ambassador container in Kubernetes, but runs everywhere. Based on [Bun >1.3](https://bun.com/docs/runtime/http/server#reference), zero dependencies.
+Mostly used as ambassador container in Kubernetes, but runs everywhere. Based on [Bun >1.3](https://bun.com/docs/runtime/http/server#reference), **zero** dependencies.
 
 ## Why?
 
@@ -15,8 +15,9 @@ If you feel comfortable with Python, you can also use `mitmproxy` for the task. 
 ## Features
 
 - 📝 Configure **logging of *request* and *response*** (that's not easy with nginx, traefik, ha-proxy). You can print metadata, headers, body, even secrets (if you want so). And all configurable by environment variables. 
-  - Supports colored output, can send HTTP response code >= 400 to StdErr
+  - Supports colored output, can send HTTP response code >= 400 to stderr
   - Masks all secrets such as Bearer token, X-Api-Key, Basic Auth, X-Token (unless you configure `…SHOW_SECRETS`).
+  - One line per request, one line per response, no logspam. And with unique ID per request (uses `Bun.randomUUIDv7()`, a sequential ID based on the current timestamp).
 - 🔐 Handles compression, TLS versions and **custom CA** (for example company wide root certificates) so you don't have to tweak your existing app.
 - 🐢 Can **delay** network requests on specific paths and request bodies (uses RegExp, test them for example on [RegExr](https://regexr.com/)). And make sure Enei has enough RAM to keep the data in memory while waiting.
 - 📨 Inject or overwrite **custom headers** to your requests. 
@@ -34,13 +35,13 @@ If you feel comfortable with Python, you can also use `mitmproxy` for the task. 
 | `ENEI_DESTINATION` | Destination URL. You can also specify protocol and port here. | `https://postman-echo.com` |
 | `ENEI_DELAY_1_PATH_REGEX` | Regex on `URL.pathname` + `URL.search` to delay request forwarding. Enei will just wait with sending the request to the destination. Useful for debugging. | `^\/delayed\/` |
 | `ENEI_DELAY_1_BODY_REGEX` | Regex on request body to delay request forwarding, like on path above. If either path or body is found the delay is applied. Right now there is no possibility to delay on response body, file an issue if you think that should be supported. ☕ | `` |
-| `ENEI_DELAY_1_MILLISECONDS` | The duration to delay request forwarding. Note: The delays are tested sequentially, so if all thre match you get a delay of 15 seconds in this example! | `5000` |
+| `ENEI_DELAY_1_MILLISECONDS` | The duration to delay request forwarding. Note: The delays are tested sequentially, so if all thre match you get a delay of 15 seconds in this example! | `5001` |
 | `ENEI_DELAY_2_PATH_REGEX` | Same as `ENEI_DELAY_1_PATH_REGEX` | `` |
 | `ENEI_DELAY_2_BODY_REGEX` | Same as `ENEI_DELAY_1_BODY_REGEX` | `` |
-| `ENEI_DELAY_2_MILLISECONDS` | Same as `ENEI_DELAY_1_MILLISECONDS` | `3000` |
+| `ENEI_DELAY_2_MILLISECONDS` | Same as `ENEI_DELAY_1_MILLISECONDS` | `3002` |
 | `ENEI_DELAY_3_PATH_REGEX` | Same as `ENEI_DELAY_1_PATH_REGEX` | `` |
 | `ENEI_DELAY_3_BODY_REGEX` | Same as `ENEI_DELAY_1_BODY_REGEX` | `` | |
-| `ENEI_DELAY_3_MILLISECONDS` | Same as `ENEI_DELAY_1_MILLISECONDS` | `7000` |
+| `ENEI_DELAY_3_MILLISECONDS` | Same as `ENEI_DELAY_1_MILLISECONDS` | `7003` |
 | `ENEI_FORWARD_CUSTOM_HEADERS` | Custom headers added to the request. Should be a JSON object as string (gets parsed by Enei), like `{"x-api-key": "token-42"}`. Will overwrite existing (thats a feature!) | ` ` |
 | `ENEI_BACKWARD_CUSTOM_HEADERS` | Custom headers added to the response. Should be a JSON object as string (gets parsed by Enei), like `{"x-api-key": "token-42"}`. Will overwrite existing (thats a feature!) | ` ` |
 | `ENEI_LOG_IGNORE` | Regex on `URL.pathname` + `URL.search` to ignore in log output. Enei will forward traffic to `/health` to the `ENEI_DESTINATION` server. Use `/enei/health` to check Enei itself. | `^\/health(z?)$` |
@@ -186,13 +187,13 @@ If you don't supply a `ENEI_DESTINATION` we will just mirror your data.
 
 The following features could be nice to have, but have not yet been implemented:
 
-- [ ] Supply custom headers, eg. to inject auth tokens
 - [ ] SIGTERM: Wait for ongoing requests (especially important with delayed requests) to finish.
 - [ ] Supply random failures for testing
 
 And there is also some code cleanup needed:
 
-- [ ] Move `process.env.XZY === "true"` to a solid `Boolean` test function
+- [ ] Move `process.env.XZY === "true"` to a solid `Boolean` test function or even better a global config object
+- [ ] Add proper testing
 
 ## Development
 
@@ -211,20 +212,28 @@ Nothing to do. There are no dependencies, it's all plain Bun 🥳.
 ### Run locally
 
 ```bash
-bun run index.ts
+bun run dev
+curl 'http://localhost:42144/put' -H 'Accept-Encoding: gzip' -T tests/request-body.json -v
+
+# maybe easier during dev work. Make sure watch and jq are installed. 
+# Add -v to curl if you want to see the headers
+watch -c "curl 'http://localhost:42144/put' -H 'Accept-Encoding: gzip' -T tests/request-body.json --silent | jq -C"
 ```
 
 ### Run tests
+
+Not implemented yet!
+
 ```bash
 bun test
 ```
 
 ## Imprint
 
-At Schutz & Rettung Zürich we are running the dispatch center for medical and fire fighting emergencies. Most of our newer applications run in Kubernetes and need to be high available and fully transparent about what they are doing. Because if something goes wrong during an emergency call, we need to make shure the same mistake cannot happen twice. 
+At Schutz & Rettung Zürich we are running the dispatch center for medical and fire fighting emergencies. Most of our newer applications run in Kubernetes and need to be high available and fully transparent about what they are doing. Because if something goes wrong during an emergency call, we need to make sure the same mistake cannot happen twice. 
 
 ![Logo of Schutz & Rettung Zürich](https://github.com/Schutz-Rettung-Zurich/.github/raw/main/profile/logo_SRZ.png)
 
 We often had the need to replay \*exactly* what has happend, so request and response body are important. And because we run the service for our own staff only and on promise privacy is already handled.
 
-We thought about using tools like `envoy` or basic `socat`, but we also wanted the log to be nicely formatted because we forward them to Grafana Loki, our centralized log storage.
+We thought about using tools like `envoy` or basic `socat`, but we also wanted the log to be nicely formatted because we forward them to Grafana Loki, our centralized log storage. And `mitmproxy` just felt too complicated for daily use.
