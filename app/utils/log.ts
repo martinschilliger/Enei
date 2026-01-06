@@ -59,10 +59,8 @@ export const logRequest = (
   }
 
   // Check if we want to print request body
-  if (process.env.ENEI_LOG_FORWARD_BODY === "true") {
-    body = JSON.stringify(body);
-  } else {
-    body = "";
+  if (process.env.ENEI_LOG_FORWARD_BODY !== "true") {
+    body = ""; // safe because body is a string (no reference to real body)
   }
 
   // cap body log after x chars
@@ -100,10 +98,8 @@ export const logResponse = (
   }
 
   // Check if we want to print response body
-  if (process.env.ENEI_LOG_BACKWARD_BODY === "true") {
-    body = JSON.stringify(body);
-  } else {
-    body = "";
+  if (process.env.ENEI_LOG_BACKWARD_BODY !== "true") {
+    body = ""; // safe because body is a string (no reference to real body)
   }
 
   // cap body log after x chars
@@ -153,7 +149,7 @@ const logLine = (
     termColorizedStr(status_log, status < 400 ? "green" : "red"),
     termColorizedStr(id_log, "grey"),
     termColorizedStr(additional_log, "grey"),
-    termColorizedStr(JSON.stringify(path_log), "yellow"),
+    termColorizedStr(path_log, "yellow"),
     termColorizedStr(headers, "blue"),
     termColorizedStr(body, "brown"),
   ].filter((x) => x != "[__ENEI_DO_NOT_PRINT__]");
