@@ -4,5 +4,5 @@
 cafile = "/config/cafile.crt"
 
 
-# By default, telemetry is enabled
+# By default, telemetry is enabled otherwise
 telemetry = false
