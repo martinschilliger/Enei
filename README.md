@@ -20,7 +20,8 @@ If you feel comfortable with Python, you can also use `mitmproxy` for the task. 
   - One line per request, one line per response, no logspam. And with unique ID per request (uses a part of `Bun.randomUUIDv7()`, a sequential but random ID based on the current timestamp).
 - 🔐 Handles compression, TLS versions and **custom CA** (for example company wide root certificates) so you don't have to tweak your existing app.
 - 🐢 Can **delay** network requests on specific paths and request bodies (uses RegExp, test them for example on [RegExr](https://regexr.com/)). And make sure Enei has enough RAM to keep the data in memory while waiting.
-- 📨 Inject or overwrite **custom headers** to your requests. 
+- 📨 Inject or overwrite **custom headers** to your requests or responses.
+- 📦 Inject or overwrite **custom body** to your requests. 
 
 ## Warning
 
@@ -44,6 +45,8 @@ If you feel comfortable with Python, you can also use `mitmproxy` for the task. 
 | `ENEI_DELAY_3_MILLISECONDS` | Same as `ENEI_DELAY_1_MILLISECONDS` | `7003` |
 | `ENEI_FORWARD_CUSTOM_HEADERS` | Custom headers added to the request. Should be a JSON object as string (gets parsed by Enei), like `{"x-api-key": "token-42"}`. Will overwrite existing (thats a feature!) | ` ` |
 | `ENEI_BACKWARD_CUSTOM_HEADERS` | Custom headers added to the response. Should be a JSON object as string (gets parsed by Enei), like `{"x-api-key": "token-42"}`. Will overwrite existing (thats a feature!) | ` ` |
+| `ENEI_FORWARD_CUSTOM_BODY_REGEX` | Custom body regex executed on the request. You can use it to search and replace specific parts of the body | `"foo":"(.+)","xxx"` |
+| `ENEI_FORWARD_CUSTOM_BODY_REPLACEMENT` | Replacement string. See [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#specifying_a_string_as_the_replacement) for possible values. | `"bar":"$1","xxx"` |
 | `ENEI_LOG_IGNORE` | Regex on `URL.pathname` + `URL.search` to ignore in log output. Enei will forward traffic to `/health` to the `ENEI_DESTINATION` server. Use `/enei/health` to check Enei itself. | `^\/health(z?)$` |
 | `ENEI_LOG_COLORIZE` | Colorize log in terminal | `true` |
 | `ENEI_LOG_STATUSCODE_STDERR` | Output to stderr if HTTP response code is >= 400 | `false` |

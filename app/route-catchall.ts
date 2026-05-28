@@ -43,6 +43,15 @@ export const catchAll = async (req: Request) => {
   // remove content-encoding so that bun will set its own
   delete enei_request_options.headers["accept-encoding"];
 
+  // let the user replace the request body
+  if (process.env.ENEI_FORWARD_CUSTOM_BODY_REGEX && process.env.ENEI_FORWARD_CUSTOM_BODY_REPLACEMENT) {
+    console.log("Replacing " + process.env.ENEI_FORWARD_CUSTOM_BODY_REGEX + " with " + process.env.ENEI_FORWARD_CUSTOM_BODY_REPLACEMENT)
+
+    let replacedBody = REQ_BODY.replaceAll(new RegExp(process.env.ENEI_FORWARD_CUSTOM_BODY_REGEX, 'g'), process.env.ENEI_FORWARD_CUSTOM_BODY_REPLACEMENT)
+
+    enei_request_options.body = replacedBody;
+  }
+
   //
   // send request data to the logging function
   //
@@ -51,7 +60,7 @@ export const catchAll = async (req: Request) => {
     REQ_URL,
     req.method,
     enei_request_options.headers,
-    REQ_BODY
+    enei_request_options.body
   );
 
   //

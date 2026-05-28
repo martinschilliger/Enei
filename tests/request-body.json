@@ -1,6 +1,1 @@
-{
-  "gugus": "dada",
-  "age": 3,
-  "notSet": null,
-  "boolean": true
-}
+{"clientName":"ELSE42D17","esw":{"tycod":"9.9.2.15","subTycod":""},"comments":[{"type":1,"text":"DISPO: Einsatz wurde auf TEST-Arbeitsplatz erfasst","isPending":true},{"type":1,"text":"Initiale Notrufmeldung: Testeinsatz","isPending":true}],"patients":[]}
