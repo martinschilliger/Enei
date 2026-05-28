@@ -17,7 +17,7 @@ If you feel comfortable with Python, you can also use `mitmproxy` for the task. 
 - 📝 Configure **logging of *request* and *response*** (that's not easy with nginx, traefik, ha-proxy). You can print metadata, headers, body, even secrets (if you want so). And all configurable by environment variables. 
   - Supports colored output, can send HTTP response code >= 400 to stderr
   - Masks all secrets such as Bearer token, X-Api-Key, Basic Auth, X-Token (unless you configure `…SHOW_SECRETS`).
-  - One line per request, one line per response, no logspam. And with unique ID per request (uses `Bun.randomUUIDv7()`, a sequential ID based on the current timestamp).
+  - One line per request, one line per response, no logspam. And with unique ID per request (uses a part of `Bun.randomUUIDv7()`, a sequential but random ID based on the current timestamp).
 - 🔐 Handles compression, TLS versions and **custom CA** (for example company wide root certificates) so you don't have to tweak your existing app.
 - 🐢 Can **delay** network requests on specific paths and request bodies (uses RegExp, test them for example on [RegExr](https://regexr.com/)). And make sure Enei has enough RAM to keep the data in memory while waiting.
 - 📨 Inject or overwrite **custom headers** to your requests. 

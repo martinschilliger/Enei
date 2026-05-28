@@ -2,7 +2,7 @@ import { processDelays } from "./processDelays";
 import { logRequest, logResponse } from "./utils/log";
 
 export const catchAll = async (req: Request) => {
-  const REQ_ID = Bun.randomUUIDv7();
+  const REQ_ID = Bun.randomUUIDv7().substring(14, 23).replace("-", "");
   const REQ_URL = new URL(req.url);
   let REQ_BODY = "";
 
