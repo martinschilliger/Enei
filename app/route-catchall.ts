@@ -38,12 +38,12 @@ export const catchAll = async (req: Request) => {
 
   // let the user replace the request body
   if (
-    env.ENEI_FORWARD_CUSTOM_BODY_REGEX &&
-    env.ENEI_FORWARD_CUSTOM_BODY_REPLACEMENT
+    env.ENEI_FORWARD_BODY_REGEX &&
+    env.ENEI_FORWARD_BODY_REPLACEMENT
   ) {
     let replacedBody = REQ_BODY.replaceAll(
-      new RegExp(env.ENEI_FORWARD_CUSTOM_BODY_REGEX, "g"),
-      env.ENEI_FORWARD_CUSTOM_BODY_REPLACEMENT,
+      new RegExp(env.ENEI_FORWARD_BODY_REGEX, "g"),
+      env.ENEI_FORWARD_BODY_REPLACEMENT,
     );
 
     enei_request_options.body = replacedBody;
