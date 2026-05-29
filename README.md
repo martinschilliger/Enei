@@ -199,6 +199,7 @@ There is also some work needed:
 1. Commit the changes to git: `git add .`, `git commit -m "My message"`
 2. Create a new version: `npm version major|minor|patch`
 3. Push Commits and Tags: `git push origin main --follow-tags`
+4. GitHub will create a new container-image 🚀
 
 ### Install dependencies
 
