@@ -1,8 +1,10 @@
+import { env } from './env';
+
 export const termColorizedStr = (text: string, color: string) => {
   if (text.length === 0) {
     return "[__ENEI_DO_NOT_PRINT__]";
   }
-  if (process.env.ENEI_LOG_COLORIZE === "true") {
+  if (env.ENEI_LOG_COLORIZE) {
     return [Bun.color(color, "ansi"), text, "\u001B[0m"].join("");
   } else {
     return text;
@@ -44,14 +46,14 @@ export const logRequest = (
   additional?: string
 ) => {
   // Check if we want to print request
-  if (process.env.ENEI_LOG_FORWARD !== "true") {
+  if (!env.ENEI_LOG_FORWARD) {
     return;
   }
 
   // Check if we want to print response headers
   let headers_str = "";
-  if (process.env.ENEI_LOG_FORWARD_HEADERS === "true") {
-    if (process.env.ENEI_LOG_FORWARD_HEADERS_SHOW_SECRETS === "true") {
+  if (env.ENEI_LOG_FORWARD_HEADERS) {
+    if (env.ENEI_LOG_FORWARD_HEADERS_SHOW_SECRETS) {
       headers_str = JSON.stringify(headers);
     } else {
       headers_str = JSON.stringify(redactSensitiveHeaders(headers));
@@ -59,14 +61,13 @@ export const logRequest = (
   }
 
   // Check if we want to print request body
-  if (process.env.ENEI_LOG_FORWARD_BODY !== "true") {
+  if (!env.ENEI_LOG_FORWARD_BODY) {
     body = ""; // safe because body is a string (no reference to real body)
   }
 
   // cap body log after x chars
-  if (process.env.ENEI_LOG_FORWARD_BODY_CAP) {
-    const CAP_AFTER = Number(process.env.ENEI_LOG_FORWARD_BODY_CAP);
-    body = body.substring(0, CAP_AFTER);
+  if (env.ENEI_LOG_FORWARD_BODY_CAP) {
+    body = body.substring(0, env.ENEI_LOG_FORWARD_BODY_CAP);
   }
 
   // REQU and RESP are chosen to be the same length
@@ -83,14 +84,14 @@ export const logResponse = (
   additional?: string
 ) => {
   // Check if we want to print response
-  if (process.env.ENEI_LOG_BACKWARD !== "true") {
+  if (!env.ENEI_LOG_BACKWARD) {
     return;
   }
 
   // Check if we want to print response headers
   let headers_str = "";
-  if (process.env.ENEI_LOG_BACKWARD_HEADERS === "true") {
-    if (process.env.ENEI_LOG_BACKWARD_HEADERS_SHOW_SECRETS === "true") {
+  if (env.ENEI_LOG_BACKWARD_HEADERS) {
+    if (env.ENEI_LOG_BACKWARD_HEADERS_SHOW_SECRETS) {
       headers_str = JSON.stringify(headers);
     } else {
       headers_str = JSON.stringify(redactSensitiveHeaders(headers));
@@ -98,14 +99,13 @@ export const logResponse = (
   }
 
   // Check if we want to print response body
-  if (process.env.ENEI_LOG_BACKWARD_BODY !== "true") {
+  if (!env.ENEI_LOG_BACKWARD_BODY) {
     body = ""; // safe because body is a string (no reference to real body)
   }
 
   // cap body log after x chars
-  if (process.env.ENEI_LOG_BACKWARD_BODY_CAP) {
-    const CAP_AFTER = Number(process.env.ENEI_LOG_BACKWARD_BODY_CAP);
-    body = body.substring(0, CAP_AFTER);
+  if (env.ENEI_LOG_BACKWARD_BODY_CAP) {
+    body = body.substring(0, env.ENEI_LOG_BACKWARD_BODY_CAP);
   }
 
   logLine(id, url, status, method, headers_str, body, "RESPONSE", additional);
@@ -134,9 +134,8 @@ const logLine = (
   let additional_log = additional ? `[${additional}]` : "";
 
   // Test if the pathname is in ENEI_LOG_IGNORE
-  if (process.env.ENEI_LOG_IGNORE) {
-    const regex = new RegExp(process.env.ENEI_LOG_IGNORE);
-    if (regex.test(path_log)) {
+  if (env.ENEI_LOG_IGNORE) {
+    if (env.ENEI_LOG_IGNORE.test(path_log)) {
       return;
     }
   }
@@ -154,7 +153,7 @@ const logLine = (
     termColorizedStr(body, "brown"),
   ].filter((x) => x != "[__ENEI_DO_NOT_PRINT__]");
   // print to stderr, if configured so
-  if (status >= 400 && process.env.ENEI_LOG_STATUSCODE_STDERR === "true") {
+  if (status >= 400 && env.ENEI_LOG_STATUSCODE_STDERR) {
     console.error(...log_data);
   } else {
     console.log(...log_data);

@@ -1,3 +1,4 @@
+import { env } from "./utils/env";
 import { processDelays } from "./processDelays";
 import { logRequest, logResponse } from "./utils/log";
 
@@ -16,38 +17,34 @@ export const catchAll = async (req: Request) => {
   //
   // prepare the request
   //
-  const enei_url = `${process.env.ENEI_DESTINATION}${REQ_URL.pathname}${REQ_URL.search}`;
+  const enei_url = `${env.ENEI_DESTINATION}${REQ_URL.pathname}${REQ_URL.search}`;
   const enei_request_options = {
     method: req.method,
     body: REQ_BODY,
     headers: JSON.parse(JSON.stringify(req.headers)),
   };
-  enei_request_options.headers.host = new URL(
-    String(process.env.ENEI_DESTINATION)
-  ).host;
+  enei_request_options.headers.host = new URL(env.ENEI_DESTINATION).host;
 
   // let the user inject request headers
-  if (process.env.ENEI_FORWARD_CUSTOM_HEADERS) {
-    try {
-      let custom_headers = JSON.parse(process.env.ENEI_FORWARD_CUSTOM_HEADERS);
-      if (Object.keys(custom_headers).length) {
-        Object.keys(custom_headers).forEach((x) => {
-          enei_request_options.headers[x] = custom_headers[x];
-        });
-      }
-    } catch (e) {
-      console.error("Could not use ENEI_FORWARD_CUSTOM_HEADERS", e);
-    }
+  let custom_forward_headers = env.ENEI_FORWARD_CUSTOM_HEADERS ?? {};
+  if (Object.keys(custom_forward_headers).length) {
+    Object.keys(custom_forward_headers).forEach((x) => {
+      enei_request_options.headers[x] = custom_forward_headers[x];
+    });
   }
 
   // remove content-encoding so that bun will set its own
   delete enei_request_options.headers["accept-encoding"];
 
   // let the user replace the request body
-  if (process.env.ENEI_FORWARD_CUSTOM_BODY_REGEX && process.env.ENEI_FORWARD_CUSTOM_BODY_REPLACEMENT) {
-    console.log("Replacing " + process.env.ENEI_FORWARD_CUSTOM_BODY_REGEX + " with " + process.env.ENEI_FORWARD_CUSTOM_BODY_REPLACEMENT)
-
-    let replacedBody = REQ_BODY.replaceAll(new RegExp(process.env.ENEI_FORWARD_CUSTOM_BODY_REGEX, 'g'), process.env.ENEI_FORWARD_CUSTOM_BODY_REPLACEMENT)
+  if (
+    env.ENEI_FORWARD_CUSTOM_BODY_REGEX &&
+    env.ENEI_FORWARD_CUSTOM_BODY_REPLACEMENT
+  ) {
+    let replacedBody = REQ_BODY.replaceAll(
+      new RegExp(env.ENEI_FORWARD_CUSTOM_BODY_REGEX, "g"),
+      env.ENEI_FORWARD_CUSTOM_BODY_REPLACEMENT,
+    );
 
     enei_request_options.body = replacedBody;
   }
@@ -60,7 +57,7 @@ export const catchAll = async (req: Request) => {
     REQ_URL,
     req.method,
     enei_request_options.headers,
-    enei_request_options.body
+    enei_request_options.body,
   );
 
   //
@@ -68,7 +65,7 @@ export const catchAll = async (req: Request) => {
   //
   const enei_delay_request_text = await processDelays(
     `${REQ_URL.pathname}${REQ_URL.search}`,
-    REQ_BODY
+    REQ_BODY,
   );
 
   //
@@ -80,23 +77,17 @@ export const catchAll = async (req: Request) => {
   // get the response data
   const enei_response_body = await enei_response.text();
   const enei_response_headers = JSON.parse(
-    JSON.stringify(enei_response.headers)
+    JSON.stringify(enei_response.headers),
   );
   // remove content-encoding so that bun will set its own
   delete enei_response_headers["content-encoding"];
 
   // let the user inject response headers
-  if (process.env.ENEI_BACKWARD_CUSTOM_HEADERS) {
-    try {
-      let custom_headers = JSON.parse(process.env.ENEI_BACKWARD_CUSTOM_HEADERS);
-      if (Object.keys(custom_headers).length) {
-        Object.keys(custom_headers).forEach((x) => {
-          enei_response_headers[x] = custom_headers[x];
-        });
-      }
-    } catch (e) {
-      console.error("Could not use ENEI_FORWARD_CUSTOM_HEADERS", e);
-    }
+  let custom_backward_headers = env.ENEI_FORWARD_CUSTOM_HEADERS ?? {};
+  if (Object.keys(custom_backward_headers).length) {
+    Object.keys(custom_backward_headers).forEach((x) => {
+      enei_request_options.headers[x] = custom_backward_headers[x];
+    });
   }
 
   //
@@ -109,7 +100,7 @@ export const catchAll = async (req: Request) => {
     req.method,
     enei_response_headers,
     enei_response_body,
-    enei_delay_request_text
+    enei_delay_request_text,
   );
 
   //

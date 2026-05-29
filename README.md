@@ -34,7 +34,7 @@ If you feel comfortable with Python, you can also use `mitmproxy` for the task. 
 |---------|-------------|-----------------|
 | `PORT` | Listener port | `42144` |
 | `ENEI_DESTINATION` | Destination URL. You can also specify protocol and port here. | `https://postman-echo.com` |
-| `ENEI_DELAY_1_PATH_REGEX` | Regex on `URL.pathname` + `URL.search` to delay request forwarding. Enei will just wait with sending the request to the destination. Useful for debugging. | `^\/delayed\/` |
+| `ENEI_DELAY_1_PATH_REGEX` | Regex on `URL.pathname` + `URL.search` to delay request forwarding. Enei will just wait with sending the request to the destination. Useful for debugging. | `"delayed-\D.+"` |
 | `ENEI_DELAY_1_BODY_REGEX` | Regex on request body to delay request forwarding, like on path above. If either path or body is found the delay is applied. Right now there is no possibility to delay on response body, file an issue if you think that should be supported. ☕ | `` |
 | `ENEI_DELAY_1_MILLISECONDS` | The duration to delay request forwarding. Note: The delays are tested sequentially, so if all thre match you get a delay of 15 seconds in this example! | `5001` |
 | `ENEI_DELAY_2_PATH_REGEX` | Same as `ENEI_DELAY_1_PATH_REGEX` | `` |
@@ -47,7 +47,7 @@ If you feel comfortable with Python, you can also use `mitmproxy` for the task. 
 | `ENEI_BACKWARD_CUSTOM_HEADERS` | Custom headers added to the response. Should be a JSON object as string (gets parsed by Enei), like `{"x-api-key": "token-42"}`. Will overwrite existing (thats a feature!) | ` ` |
 | `ENEI_FORWARD_CUSTOM_BODY_REGEX` | Custom body regex executed on the request. You can use it to search and replace specific parts of the body | `"foo":"(.+)","xxx"` |
 | `ENEI_FORWARD_CUSTOM_BODY_REPLACEMENT` | Replacement string. See [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#specifying_a_string_as_the_replacement) for possible values. | `"bar":"$1","xxx"` |
-| `ENEI_LOG_IGNORE` | Regex on `URL.pathname` + `URL.search` to ignore in log output. Enei will forward traffic to `/health` to the `ENEI_DESTINATION` server. Use `/enei/health` to check Enei itself. | `^\/health(z?)$` |
+| `ENEI_LOG_IGNORE` | Regex on `URL.pathname` + `URL.search` to ignore in log output. Enei will forward traffic to `/health` to the `ENEI_DESTINATION` server. Use `/enei/health` to check Enei itself. | `"\/health(z?)$"` |
 | `ENEI_LOG_COLORIZE` | Colorize log in terminal | `true` |
 | `ENEI_LOG_STATUSCODE_STDERR` | Output to stderr if HTTP response code is >= 400 | `false` |
 | `ENEI_LOG_FORWARD` | Print request | `true` |
@@ -188,14 +188,8 @@ If you don't supply a `ENEI_DESTINATION` we will just mirror your data.
 
 ### TODO
 
-The following features could be nice to have, but have not yet been implemented:
+There is also some work needed:
 
-- [ ] SIGTERM: Wait for ongoing requests (especially important with delayed requests) to finish.
-- [ ] Supply random failures for testing
-
-And there is also some code cleanup needed:
-
-- [ ] Move `process.env.XZY === "true"` to a solid `Boolean` test function or even better a global config object
 - [ ] Add proper testing
 
 ## Development
