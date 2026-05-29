@@ -29,38 +29,37 @@ If you feel comfortable with Python, you can also use `mitmproxy` for the task. 
 > Still in development phase, please file issues for bugs you find!
 
 ## Config
-
-| ENV-Variable                             | Description                                                                                                                                                                                                                                       | Default / Notes            |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- | --- |
-| `PORT`                                   | Listener port                                                                                                                                                                                                                                     | `42144`                    |
-| `ENEI_DESTINATION`                       | Destination URL. You can also specify protocol and port here.                                                                                                                                                                                     | `https://postman-echo.com` |
-| `ENEI_DELAY_1_PATH_REGEX`                | Regex on `URL.pathname` + `URL.search` to delay request forwarding. Enei will just wait with sending the request to the destination. Useful for debugging.                                                                                        | `"delayed-\D.+"`           |
-| `ENEI_DELAY_1_BODY_REGEX`                | Regex on request body to delay request forwarding, like on path above. If either path or body is found the delay is applied. Right now there is no possibility to delay on response body, file an issue if you think that should be supported. ☕ | ``                         |
-| `ENEI_DELAY_1_MILLISECONDS`              | The duration to delay request forwarding. Note: The delays are tested sequentially, so if all thre match you get a delay of 15 seconds in this example!                                                                                           | `5001`                     |
-| `ENEI_DELAY_2_PATH_REGEX`                | Same as `ENEI_DELAY_1_PATH_REGEX`                                                                                                                                                                                                                 | ``                         |
-| `ENEI_DELAY_2_BODY_REGEX`                | Same as `ENEI_DELAY_1_BODY_REGEX`                                                                                                                                                                                                                 | ``                         |
-| `ENEI_DELAY_2_MILLISECONDS`              | Same as `ENEI_DELAY_1_MILLISECONDS`                                                                                                                                                                                                               | `3002`                     |
-| `ENEI_DELAY_3_PATH_REGEX`                | Same as `ENEI_DELAY_1_PATH_REGEX`                                                                                                                                                                                                                 | ``                         |
-| `ENEI_DELAY_3_BODY_REGEX`                | Same as `ENEI_DELAY_1_BODY_REGEX`                                                                                                                                                                                                                 | ``                         |     |
-| `ENEI_DELAY_3_MILLISECONDS`              | Same as `ENEI_DELAY_1_MILLISECONDS`                                                                                                                                                                                                               | `7003`                     |
-| `ENEI_FORWARD_CUSTOM_HEADERS`            | Custom headers added to the request. Should be a JSON object as string (gets parsed by Enei), like `{"x-api-key": "token-42"}`. Will overwrite existing (thats a feature!)                                                                        | ` `                        |
-| `ENEI_BACKWARD_CUSTOM_HEADERS`           | Custom headers added to the response. Should be a JSON object as string (gets parsed by Enei), like `{"x-api-key": "token-42"}`. Will overwrite existing (thats a feature!)                                                                       | ` `                        |
-| `ENEI_FORWARD_BODY_REGEX`                | Custom body regex executed on the request. You can use it to search and replace specific parts of the body                                                                                                                                        | `"foo":"(.+)","xxx"`       |
-| `ENEI_FORWARD_BODY_REPLACEMENT`          | Replacement string. See [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#specifying_a_string_as_the_replacement) for possible values.                                                        | `"bar":"$1","xxx"`         |
-| `ENEI_LOG_IGNORE`                        | Regex on `URL.pathname` + `URL.search` to ignore in log output. Enei will forward traffic to `/health` to the `ENEI_DESTINATION` server. Use `/enei/health` to check Enei itself.                                                                 | `"\/health(z?)$"`          |
-| `ENEI_LOG_COLORIZE`                      | Colorize log in terminal                                                                                                                                                                                                                          | `true`                     |
-| `ENEI_LOG_STATUSCODE_STDERR`             | Output to stderr if HTTP response code is >= 400                                                                                                                                                                                                  | `false`                    |
-| `ENEI_LOG_FORWARD`                       | Print request                                                                                                                                                                                                                                     | `true`                     |
-| `ENEI_LOG_FORWARD_HEADERS`               | Print request headers                                                                                                                                                                                                                             | `false`                    |
-| `ENEI_LOG_FORWARD_HEADERS_SHOW_SECRETS`  | Print sensitive request headers. By default printed as `[redacted]`.                                                                                                                                                                              | `false`                    |
-| `ENEI_LOG_FORWARD_BODY`                  | Print request body                                                                                                                                                                                                                                | `false`                    |
-| `ENEI_LOG_FORWARD_BODY_CAP`              | Cap request body after char count                                                                                                                                                                                                                 | `1024`                     |
-| `ENEI_LOG_BACKWARD`                      | Print response                                                                                                                                                                                                                                    | `true`                     |
-| `ENEI_LOG_BACKWARD_HEADERS`              | Print response headers                                                                                                                                                                                                                            | `false`                    |
-| `ENEI_LOG_BACKWARD_HEADERS_SHOW_SECRETS` | Print sensitive response headers. By default printed as `[redacted]`.                                                                                                                                                                             | `false`                    |
-| `ENEI_LOG_BACKWARD_BODY`                 | Print response body                                                                                                                                                                                                                               | `false`                    |
-| `ENEI_LOG_BACKWARD_BODY_CAP`             | Cap response body after char count                                                                                                                                                                                                                | `1024`                     |
-| `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY`  | Proxy configuration, supported natively by Bun                                                                                                                                                                                                    | ` `                        |
+| ENV-Variable | Description | Default / Notes |
+|---------|-------------|-----------------|
+| `PORT` | Listener port | `42144` |
+| `ENEI_DESTINATION` | Destination URL. You can also specify protocol and port here. | `https://postman-echo.com` |
+| `ENEI_DELAY_1_PATH_REGEX` | Regex on `URL.pathname` + `URL.search` to delay request forwarding. Enei will just wait with sending the request to the destination. Useful for debugging. | `"delayed-\D.+"` |
+| `ENEI_DELAY_1_BODY_REGEX` | Regex on request body to delay request forwarding, like on path above. If either path or body is found the delay is applied. Right now there is no possibility to delay on response body, file an issue if you think that should be supported. ☕ | `` |
+| `ENEI_DELAY_1_MILLISECONDS` | The duration to delay request forwarding. Note: The delays are tested sequentially, so if all thre match you get a delay of 15 seconds in this example! | `5001` |
+| `ENEI_DELAY_2_PATH_REGEX` | Same as `ENEI_DELAY_1_PATH_REGEX` | `` |
+| `ENEI_DELAY_2_BODY_REGEX` | Same as `ENEI_DELAY_1_BODY_REGEX` | `` |
+| `ENEI_DELAY_2_MILLISECONDS` | Same as `ENEI_DELAY_1_MILLISECONDS` | `3002` |
+| `ENEI_DELAY_3_PATH_REGEX` | Same as `ENEI_DELAY_1_PATH_REGEX` | `` |
+| `ENEI_DELAY_3_BODY_REGEX` | Same as `ENEI_DELAY_1_BODY_REGEX` | `` | |
+| `ENEI_DELAY_3_MILLISECONDS` | Same as `ENEI_DELAY_1_MILLISECONDS` | `7003` |
+| `ENEI_FORWARD_CUSTOM_HEADERS` | Custom headers added to the request. Should be a JSON object as string (gets parsed by Enei), like `{"x-api-key": "token-42"}`. Will overwrite existing (thats a feature!) | ` ` |
+| `ENEI_BACKWARD_CUSTOM_HEADERS` | Custom headers added to the response. Should be a JSON object as string (gets parsed by Enei), like `{"x-api-key": "token-42"}`. Will overwrite existing (thats a feature!) | ` ` |
+| `ENEI_FORWARD_BODY_REGEX` | Custom body regex executed on the request. You can use it to search and replace specific parts of the body | `"foo":"(.+)","xxx"` |
+| `ENEI_FORWARD_BODY_REPLACEMENT` | Replacement string. See [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#specifying_a_string_as_the_replacement) for possible values. | `"bar":"$1","xxx"` |
+| `ENEI_LOG_IGNORE` | Regex on `URL.pathname` + `URL.search` to ignore in log output. Enei will forward traffic to `/health` to the `ENEI_DESTINATION` server. Use `/enei/health` to check Enei itself. | `"\/health(z?)$"` |
+| `ENEI_LOG_COLORIZE` | Colorize log in terminal | `true` |
+| `ENEI_LOG_STATUSCODE_STDERR` | Output to stderr if HTTP response code is >= 400 | `false` |
+| `ENEI_LOG_FORWARD` | Print request | `true` |
+| `ENEI_LOG_FORWARD_HEADERS` | Print request headers | `false` |
+| `ENEI_LOG_FORWARD_HEADERS_SHOW_SECRETS` | Print sensitive request headers. By default printed as `[redacted]`. | `false` |
+| `ENEI_LOG_FORWARD_BODY` | Print request body | `false` |
+| `ENEI_LOG_FORWARD_BODY_CAP` | Cap request body after char count | `1024` |
+| `ENEI_LOG_BACKWARD` | Print response | `true` |
+| `ENEI_LOG_BACKWARD_HEADERS` | Print response headers | `false` |
+| `ENEI_LOG_BACKWARD_HEADERS_SHOW_SECRETS` | Print sensitive response headers. By default printed as `[redacted]`. | `false` |
+| `ENEI_LOG_BACKWARD_BODY` | Print response body | `false` |
+| `ENEI_LOG_BACKWARD_BODY_CAP` | Cap response body after char count | `1024` |
+| `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` | Proxy configuration, supported natively by Bun | ` ` |
 
 If you have special SSL-Certs, mount them to the file system on a path like `/config/cafile.crt` (you can add multiple to the same file) and inspect Bun to read it via `NODE_EXTRA_CA_CERTS`.
 
@@ -99,8 +98,12 @@ spec:
             value: "^\\/api\\/incidents\\/(keyword|protocol)"
           - name: ENEI_DELAY_1_MILLISECONDS
             value: "5000"
+          - name: ENEI_FORWARD_BODY_REGEX
+            value: '"type":1,"text":"DISPO: '
+          - name: ENEI_FORWARD_BODY_REPLACEMENT
+            value: '"type":2,"text":"'
           - name: ENEI_LOG_IGNORE
-            value: "^\\/HealthCheck$"
+            value: "^\\/HealthCheck$" # results in searching for example.com/HealthCheck with nothing behind. \\/ is a double escaping from yaml and env, so that / arrives at Enei in the end
           - name: ENEI_LOG_FORWARD
             value: "true"
           - name: ENEI_LOG_FORWARD_HEADERS
