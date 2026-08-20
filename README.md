@@ -33,6 +33,7 @@ If you feel comfortable with Python, you can also use `mitmproxy` for the task. 
 |---------|-------------|-----------------|
 | `PORT` | Listener port | `42144` |
 | `ENEI_DESTINATION` | Destination URL. You can also specify protocol and port here. | `https://postman-echo.com` |
+| `ENEI_TIMEOUT` | Timeout to serve. | `30` |
 | `ENEI_DELAY_1_PATH_REGEX` | Regex on `URL.pathname` + `URL.search` to delay request forwarding. Enei will just wait with sending the request to the destination. Useful for debugging. | `"delayed-\D.+"` |
 | `ENEI_DELAY_1_BODY_REGEX` | Regex on request body to delay request forwarding, like on path above. If either path or body is found the delay is applied. Right now there is no possibility to delay on response body, file an issue if you think that should be supported. ☕ | `` |
 | `ENEI_DELAY_1_MILLISECONDS` | The duration to delay request forwarding. Note: The delays are tested sequentially, so if all thre match you get a delay of 15 seconds in this example! | `5001` |

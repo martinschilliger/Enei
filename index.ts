@@ -1,6 +1,8 @@
+import { env } from "./app/utils/env";
 import { catchAll } from "./app/route-catchall";
 
 const server = Bun.serve({
+  idleTimeout: env.ENEI_TIMEOUT,
   routes: {
     // Our internal health endpoints.
     // Is /enei/health so that /health will be forwarded to the ENEI_DESTINATION.

@@ -66,6 +66,8 @@ function parseJsonObject(value?: string, envName?: string): Record<string, strin
 export const env = {
   ENEI_DESTINATION: process.env.ENEI_DESTINATION || "",
 
+  ENEI_TIMEOUT: parseNumber(process.env.ENEI_TIMEOUT) || 30,
+
   ENEI_DELAY_1_PATH_REGEX: parseRegex(process.env.ENEI_DELAY_1_PATH_REGEX),
 
   ENEI_DELAY_1_BODY_REGEX: parseRegex(process.env.ENEI_DELAY_1_BODY_REGEX),
