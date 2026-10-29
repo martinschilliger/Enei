@@ -86,7 +86,7 @@ export const catchAll = async (req: Request) => {
   let custom_backward_headers = env.ENEI_BACKWARD_CUSTOM_HEADERS ?? {};
   if (Object.keys(custom_backward_headers).length) {
     Object.keys(custom_backward_headers).forEach((x) => {
-      enei_response_headers.headers[x] = custom_backward_headers[x];
+      enei_response_headers[x] = custom_backward_headers[x];
     });
   }
 
