@@ -83,14 +83,12 @@ export const catchAll = async (req: Request) => {
   delete enei_response_headers["content-encoding"];
 
   // let the user inject response headers
-  let custom_backward_headers = env.ENEI_FORWARD_CUSTOM_HEADERS ?? {};
+  let custom_backward_headers = env.ENEI_BACKWARD_CUSTOM_HEADERS ?? {};
   if (Object.keys(custom_backward_headers).length) {
     Object.keys(custom_backward_headers).forEach((x) => {
-      enei_request_options.headers[x] = custom_backward_headers[x];
+      enei_response_headers.headers[x] = custom_backward_headers[x];
     });
   }
-
-
 
   // let the user replace the response body
   if (
