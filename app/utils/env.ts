@@ -101,6 +101,13 @@ export const env = {
   ENEI_FORWARD_BODY_REPLACEMENT:
     process.env.ENEI_FORWARD_BODY_REPLACEMENT,
 
+  ENEI_BACKWARD_BODY_REGEX: parseRegex(
+    process.env.ENEI_BACKWARD_BODY_REGEX,
+  ),
+
+  ENEI_BACKWARD_BODY_REPLACEMENT:
+    process.env.ENEI_BACKWARD_BODY_REPLACEMENT,
+
   ENEI_LOG_IGNORE: parseRegex(process.env.ENEI_LOG_IGNORE),
 
   ENEI_LOG_COLORIZE: parseBoolean(process.env.ENEI_LOG_COLORIZE),

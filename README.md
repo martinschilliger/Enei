@@ -47,6 +47,8 @@ If you feel comfortable with Python, you can also use `mitmproxy` for the task. 
 | `ENEI_BACKWARD_CUSTOM_HEADERS` | Custom headers added to the response. Should be a JSON object as string (gets parsed by Enei), like `{"x-api-key": "token-42"}`. Will overwrite existing (thats a feature!) | ` ` |
 | `ENEI_FORWARD_BODY_REGEX` | Custom body regex executed on the request. You can use it to search and replace specific parts of the body | `"foo":"(.+)","xxx"` |
 | `ENEI_FORWARD_BODY_REPLACEMENT` | Replacement string. See [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#specifying_a_string_as_the_replacement) for possible values. | `"bar":"$1","xxx"` |
+| `ENEI_BACKWARD_BODY_REGEX` | Custom body regex executed on the response. You can use it to search and replace specific parts of the body | `"foo":"(.+)","xxx"` |
+| `ENEI_BACKWARD_BODY_REPLACEMENT` | Replacement string. See [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#specifying_a_string_as_the_replacement) for possible values. | `"bar":"$1","xxx"` |
 | `ENEI_LOG_IGNORE` | Regex on `URL.pathname` + `URL.search` to ignore in log output. Enei will forward traffic to `/health` to the `ENEI_DESTINATION` server. Use `/enei/health` to check Enei itself. | `"\/health(z?)$"` |
 | `ENEI_LOG_COLORIZE` | Colorize log in terminal | `true` |
 | `ENEI_LOG_STATUSCODE_STDERR` | Output to stderr if HTTP response code is >= 400 | `false` |

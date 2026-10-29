@@ -75,7 +75,7 @@ export const catchAll = async (req: Request) => {
   const enei_response = await fetch(enei_request);
 
   // get the response data
-  const enei_response_body = await enei_response.text();
+  let enei_response_body = await enei_response.text();
   const enei_response_headers = JSON.parse(
     JSON.stringify(enei_response.headers),
   );
@@ -88,6 +88,21 @@ export const catchAll = async (req: Request) => {
     Object.keys(custom_backward_headers).forEach((x) => {
       enei_request_options.headers[x] = custom_backward_headers[x];
     });
+  }
+
+
+
+  // let the user replace the response body
+  if (
+    env.ENEI_BACKWARD_BODY_REGEX &&
+    env.ENEI_BACKWARD_BODY_REPLACEMENT
+  ) {
+    let replacedBody = enei_response_body.replaceAll(
+      new RegExp(env.ENEI_BACKWARD_BODY_REGEX, "g"),
+      env.ENEI_BACKWARD_BODY_REPLACEMENT,
+    );
+
+    enei_response_body = replacedBody;
   }
 
   //
