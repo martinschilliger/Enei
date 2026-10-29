@@ -75,7 +75,7 @@ export const catchAll = async (req: Request) => {
   // or if its ENEI_CORS_AUTOACCEPT answer with 204
   //
 
-  if (env.ENEI_CORS_AUTOACCEPT) {
+  if (req.method === "OPTIONS" && env.ENEI_CORS_AUTOACCEPT) {
     const corsHeaders = {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Headers": "Authorization, Content-Type",
