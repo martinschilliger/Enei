@@ -46,7 +46,12 @@ jobs:
           PREV_TAG=$(git tag --sort=-creatordate | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 2 | tail -n 1 || true)
 
           if [ -n "${PREV_TAG}" ]; then
-            COMMITS=$(git log "${PREV_TAG}..HEAD" --pretty=format:"- %s")
+            # Commits in range, excluding commits that carry a version tag (e.g. 0.8.2)
+            COMMITS=$(git log "${PREV_TAG}..HEAD" --pretty=format:"%H %s" | while read -r hash rest; do
+              if ! git tag --points-at "$hash" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
+                echo "- $rest"
+              fi
+            done)
           else
             COMMITS=$(git log --pretty=format:"- %s" -n 20)
           fi
@@ -56,7 +61,7 @@ jobs:
           fi
 
           cat > release-notes.md <<EOF
-          ## Änderungen
+          ## Changes
 
           ${COMMITS}
           EOF
