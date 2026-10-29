@@ -65,7 +65,7 @@ If you feel comfortable with Python, you can also use `mitmproxy` for the task. 
 | `ENEI_LOG_BACKWARD_BODY_CAP` | Cap response body after char count | `1024` |
 | `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` | Proxy configuration, supported natively by Bun | ` ` |
 
-If you have special SSL-Certs, mount them to the file system on a path like `/config/cafile.crt` (you can add multiple to the same file) and inspect Bun to read it via `NODE_EXTRA_CA_CERTS`.
+If you have special SSL certs, mount them to the file system on a path like `/config/cafile.crt` (you can add multiple to the same file) and inspect Bun to read it via `NODE_EXTRA_CA_CERTS`. Or add `NODE_TLS_REJECT_UNAUTHORIZED=0` to accept even invalid certs.
 
 ## Running it
 
