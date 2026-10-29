@@ -68,6 +68,8 @@ export const env = {
 
   ENEI_TIMEOUT: parseNumber(process.env.ENEI_TIMEOUT) || 30,
 
+  ENEI_CORS_AUTOACCEPT: parseBoolean(process.env.ENEI_CORS_AUTOACCEPT),
+
   ENEI_DELAY_1_PATH_REGEX: parseRegex(process.env.ENEI_DELAY_1_PATH_REGEX),
 
   ENEI_DELAY_1_BODY_REGEX: parseRegex(process.env.ENEI_DELAY_1_BODY_REGEX),

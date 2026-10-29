@@ -17,6 +17,7 @@ export const catchAll = async (req: Request) => {
   //
   // prepare the request
   //
+
   const enei_url = `${env.ENEI_DESTINATION}${REQ_URL.pathname}${REQ_URL.search}`;
   const enei_request_options = {
     method: req.method,
@@ -49,6 +50,7 @@ export const catchAll = async (req: Request) => {
     enei_request_options.body = replacedBody;
   }
 
+
   //
   // send request data to the logging function
   //
@@ -69,59 +71,86 @@ export const catchAll = async (req: Request) => {
   );
 
   //
-  // make the actual request
+  // make the actual request 
+  // or if its ENEI_CORS_AUTOACCEPT answer with 204
   //
-  const enei_request = new Request(enei_url, enei_request_options);
-  const enei_response = await fetch(enei_request);
 
-  // get the response data
-  let enei_response_body = await enei_response.text();
-  const enei_response_headers = JSON.parse(
-    JSON.stringify(enei_response.headers),
-  );
-  // remove content-encoding so that bun will set its own
-  delete enei_response_headers["content-encoding"];
+  if (env.ENEI_CORS_AUTOACCEPT) {
+    const corsHeaders = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Authorization, Content-Type",
+      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS"
+    };
 
-  // let the user inject response headers
-  let custom_backward_headers = env.ENEI_BACKWARD_CUSTOM_HEADERS ?? {};
-  if (Object.keys(custom_backward_headers).length) {
-    Object.keys(custom_backward_headers).forEach((x) => {
-      enei_response_headers[x] = custom_backward_headers[x];
-    });
-  }
-
-  // let the user replace the response body
-  if (
-    env.ENEI_BACKWARD_BODY_REGEX &&
-    env.ENEI_BACKWARD_BODY_REPLACEMENT
-  ) {
-    let replacedBody = enei_response_body.replaceAll(
-      new RegExp(env.ENEI_BACKWARD_BODY_REGEX, "g"),
-      env.ENEI_BACKWARD_BODY_REPLACEMENT,
+    logResponse(
+      REQ_ID,
+      REQ_URL,
+      204,
+      req.method,
+      corsHeaders,
+      "",
+      enei_delay_request_text,
     );
 
-    enei_response_body = replacedBody;
+    return new Response(null, {
+      status: 204,
+      headers: corsHeaders
+    });
+
   }
+  else {
+    const enei_request = new Request(enei_url, enei_request_options);
+    const enei_response = await fetch(enei_request);
 
-  //
-  // send response data to the logging function
-  //
-  logResponse(
-    REQ_ID,
-    REQ_URL,
-    enei_response.status,
-    req.method,
-    enei_response_headers,
-    enei_response_body,
-    enei_delay_request_text,
-  );
+    // get the response data
+    let enei_response_body = await enei_response.text();
+    const enei_response_headers = JSON.parse(
+      JSON.stringify(enei_response.headers),
+    );
+    // remove content-encoding so that bun will set its own
+    delete enei_response_headers["content-encoding"];
 
-  //
-  // create a new Response to answer the client
-  //
-  return new Response(enei_response_body, {
-    status: enei_response.status,
-    statusText: enei_response.statusText,
-    headers: enei_response_headers,
-  });
+    // let the user inject response headers
+    let custom_backward_headers = env.ENEI_BACKWARD_CUSTOM_HEADERS ?? {};
+    if (Object.keys(custom_backward_headers).length) {
+      Object.keys(custom_backward_headers).forEach((x) => {
+        enei_response_headers[x] = custom_backward_headers[x];
+      });
+    }
+
+    // let the user replace the response body
+    if (
+      env.ENEI_BACKWARD_BODY_REGEX &&
+      env.ENEI_BACKWARD_BODY_REPLACEMENT
+    ) {
+      let replacedBody = enei_response_body.replaceAll(
+        new RegExp(env.ENEI_BACKWARD_BODY_REGEX, "g"),
+        env.ENEI_BACKWARD_BODY_REPLACEMENT,
+      );
+
+      enei_response_body = replacedBody;
+    }
+
+    //
+    // send response data to the logging function
+    //
+    logResponse(
+      REQ_ID,
+      REQ_URL,
+      enei_response.status,
+      req.method,
+      enei_response_headers,
+      enei_response_body,
+      enei_delay_request_text,
+    );
+
+    //
+    // create a new Response to answer the client
+    //
+    return new Response(enei_response_body, {
+      status: enei_response.status,
+      statusText: enei_response.statusText,
+      headers: enei_response_headers,
+    });
+  }
 };
