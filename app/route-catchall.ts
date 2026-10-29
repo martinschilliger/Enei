@@ -113,9 +113,9 @@ export const catchAll = async (req: Request) => {
     // inject CORS headers if needed
     if (env.ENEI_CORS_AUTOACCEPT) {
       const corsHeaders: Record<string, string> = {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Authorization, Content-Type",
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS"
+        "access-control-allow-origin": "*",
+        "access-control-allow-headers": "Authorization, Content-Type",
+        "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS"
       };
       Object.keys(corsHeaders).forEach((x) => {
         enei_response_headers[x] = corsHeaders[x];
