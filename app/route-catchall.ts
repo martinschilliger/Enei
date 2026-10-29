@@ -110,6 +110,18 @@ export const catchAll = async (req: Request) => {
     // remove content-encoding so that bun will set its own
     delete enei_response_headers["content-encoding"];
 
+    // inject CORS headers if needed
+    if (env.ENEI_CORS_AUTOACCEPT) {
+      const corsHeaders: Record<string, string> = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Authorization, Content-Type",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS"
+      };
+      Object.keys(corsHeaders).forEach((x) => {
+        enei_response_headers[x] = corsHeaders[x];
+      });
+    }
+
     // let the user inject response headers
     let custom_backward_headers = env.ENEI_BACKWARD_CUSTOM_HEADERS ?? {};
     if (Object.keys(custom_backward_headers).length) {
