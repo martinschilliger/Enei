@@ -10,6 +10,8 @@ export const catchAll = async (req: Request) => {
   switch (req.method) {
     case "POST":
     case "PUT":
+    case "PATCH":
+    case "DELETE":
       REQ_BODY = await req.text();
       break;
   }
@@ -24,7 +26,9 @@ export const catchAll = async (req: Request) => {
     body: REQ_BODY,
     headers: JSON.parse(JSON.stringify(req.headers)),
   };
-  enei_request_options.headers.host = new URL(env.ENEI_DESTINATION).host;
+  if (env.ENEI_DESTINATION) {
+    enei_request_options.headers.host = new URL(env.ENEI_DESTINATION).host;
+  }
 
   // let the user inject request headers
   let custom_forward_headers = env.ENEI_FORWARD_CUSTOM_HEADERS ?? {};
@@ -33,9 +37,6 @@ export const catchAll = async (req: Request) => {
       enei_request_options.headers[x] = custom_forward_headers[x];
     });
   }
-
-  // remove content-encoding so that bun will set its own
-  delete enei_request_options.headers["accept-encoding"];
 
   // let the user replace the request body
   if (
@@ -73,7 +74,36 @@ export const catchAll = async (req: Request) => {
   //
   // make the actual request 
   // or if its ENEI_CORS_AUTOACCEPT answer with 204
+  // or if no ENEI_DESTINATION is set, mirror the request back
   //
+
+  if (!env.ENEI_DESTINATION) {
+    const mirrorBody = JSON.stringify(
+      {
+        method: req.method,
+        url: `${REQ_URL.pathname}${REQ_URL.search}`,
+        headers: enei_request_options.headers,
+        body: enei_request_options.body,
+      },
+      null,
+      2,
+    );
+
+    logResponse(
+      REQ_ID,
+      REQ_URL,
+      200,
+      req.method,
+      { "content-type": "application/json" },
+      mirrorBody,
+      enei_delay_request_text,
+    );
+
+    return new Response(mirrorBody, {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    });
+  }
 
   if (req.method === "OPTIONS" && env.ENEI_CORS_AUTOACCEPT) {
     const corsHeaders = {
@@ -107,8 +137,14 @@ export const catchAll = async (req: Request) => {
     const enei_response_headers = JSON.parse(
       JSON.stringify(enei_response.headers),
     );
-    // remove content-encoding so that bun will set its own
+    // The body is read via .text(), which decodes gzip and buffers the whole
+    // response. The original framing headers no longer apply to the decoded,
+    // fully-buffered body we forward, so drop them and let Bun recompute them.
+    // Keeping a stale content-length/content-encoding corrupts gzip/chunked
+    // responses (client reads a truncated or double-decoded body).
     delete enei_response_headers["content-encoding"];
+    delete enei_response_headers["content-length"];
+    delete enei_response_headers["transfer-encoding"];
 
     // inject CORS headers if needed
     if (env.ENEI_CORS_AUTOACCEPT) {
