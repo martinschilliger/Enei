@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "test": "echo \"No tests defined\" && exit 0 && bun test",
+    "test": "bun test",
     "dev": "bun --watch index.ts",
     "build": "bun build index.ts"
   },
